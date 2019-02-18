@@ -1,0 +1,4 @@
+### DIST
+docker exec -e CORE_PEER_LOCALMSPID=AppMSP -e CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/app.jpeg.com/peers/peer1.app.jpeg.com/tls/ca.crt -e CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/app.jpeg.com/users/Admin@app.jpeg.com/msp -e CORE_PEER_ADDRESS=peer1.app.jpeg.com:7051 -it cli bash
+
+export ORDERER_CA=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/ordererOrganizations/jpeg.com/orderers/orderer.jpeg.com/msp/tlscacerts/tlsca.jpeg.com-cert.pem

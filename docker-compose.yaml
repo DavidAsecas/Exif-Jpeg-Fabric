@@ -1,0 +1,240 @@
+#
+# Copyright IBM Corp All Rights Reserved
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+version: '2'
+
+networks:
+  jpeg:
+
+services:
+
+  orderer.jpeg.com:
+    container_name: orderer2.jpeg.com
+    image: hyperledger/fabric-orderer
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    ports:
+      - 7050:7050
+    volumes:
+        - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/genesis.block
+        - ./crypto-config/ordererOrganizations/jpeg.com/orderers/orderer.jpeg.com/msp:/var/hyperledger/orderer/msp
+        - ./crypto-config/ordererOrganizations/jpeg.com/orderers/orderer.jpeg.com/tls/:/var/hyperledger/orderer/tls
+    networks:
+      - jpeg
+
+  peer0.app.jpeg.com:
+    container_name: peer0.app.jpeg.com
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_PEER_ID=peer0.app.jpeg.com
+      - CORE_PEER_ADDRESS=peer0.app.jpeg.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.app.jpeg.com:7051
+      - CORE_PEER_LOCALMSPID=AppMSP
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=exif_jpeg
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE=true
+      - CORE_CHAINCODE_MODE=dev
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    # command: peer node start --peer-chaincodedev=true
+    ports:
+      - 7051:7051
+      - 7053:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/app.jpeg.com/peers/peer0.app.jpeg.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/app.jpeg.com/peers/peer0.app.jpeg.com/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/app.jpeg.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+    networks:
+      - jpeg
+
+  peer1.app.jpeg.com:
+    container_name: peer1.app.jpeg.com
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_PEER_ID=peer1.app.jpeg.com
+      - CORE_PEER_ADDRESS=peer1.app.jpeg.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.app.jpeg.com:7051
+      - CORE_PEER_LOCALMSPID=AppMSP
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=exif_jpeg
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE=true
+      - CORE_CHAINCODE_MODE=dev
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    # command: peer node start --peer-chaincodedev=true
+    ports:
+      - 7151:7051
+      - 7153:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/app.jpeg.com/peers/peer1.app.jpeg.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/app.jpeg.com/peers/peer1.app.jpeg.com/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/app.jpeg.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+    networks:
+      - jpeg
+
+  peer2.app.jpeg.com:
+    container_name: peer2.app.jpeg.com
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_PEER_ID=peer2.app.jpeg.com
+      - CORE_PEER_ADDRESS=peer2.app.jpeg.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer2.app.jpeg.com:7051
+      - CORE_PEER_LOCALMSPID=AppMSP
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=exif_jpeg
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE=true
+      - CORE_CHAINCODE_MODE=dev
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    # command: peer node start --peer-chaincodedev=true
+    ports:
+      - 7251:7051
+      - 7253:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/app.jpeg.com/peers/peer2.app.jpeg.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/app.jpeg.com/peers/peer2.app.jpeg.com/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/app.jpeg.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+    networks:
+      - jpeg
+  
+  peer3.app.jpeg.com:
+    container_name: peer3.app.jpeg.com
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_PEER_ID=peer3.app.jpeg.com
+      - CORE_PEER_ADDRESS=peer3.app.jpeg.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer3.app.jpeg.com:7051
+      - CORE_PEER_LOCALMSPID=AppMSP
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=exif_jpeg
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE=true
+      - CORE_CHAINCODE_MODE=dev
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    # command: peer node start --peer-chaincodedev=true
+    ports:
+      - 7351:7051
+      - 7353:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/app.jpeg.com/peers/peer3.app.jpeg.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/app.jpeg.com/peers/peer3.app.jpeg.com/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/app.jpeg.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+    networks:
+      - jpeg
+
+  peer4.app.jpeg.com:
+    container_name: peer4.app.jpeg.com
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_PEER_ID=peer4.app.jpeg.com
+      - CORE_PEER_ADDRESS=peer4.app.jpeg.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer4.app.jpeg.com:7051
+      - CORE_PEER_LOCALMSPID=AppMSP
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=exif_jpeg
+      - CORE_LOGGING_LEVEL=DEBUG
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+      - CORE_LEDGER_HISTORY_ENABLEHISTORYDATABASE=true
+      - CORE_CHAINCODE_MODE=dev
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    # command: peer node start --peer-chaincodedev=true
+    ports:
+      - 7451:7051
+      - 7453:7053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/app.jpeg.com/peers/peer4.app.jpeg.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/app.jpeg.com/peers/peer4.app.jpeg.com/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/app.jpeg.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+    networks:
+      - jpeg
+  
+  cli:
+    container_name: cli2
+    image: hyperledger/fabric-tools
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_LOGGING_LEVEL=info
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.app.jpeg.com:7051
+      - CORE_PEER_LOCALMSPID=AppMSP
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/app.jpeg.com/users/Admin@app.jpeg.com/msp
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/app.jpeg.com/peers/peer0.app.jpeg.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/app.jpeg.com/peers/peer0.app.jpeg.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/app.jpeg.com/peers/peer0.app.jpeg.com/tls/ca.crt
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    networks:
+        - jpeg
+    #depends_on:
+    #  - orderer.example.com
+    #  - peer0.org1.example.com
+    #  - couchdb
