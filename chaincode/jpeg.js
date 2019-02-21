@@ -55,7 +55,8 @@ const Chaincode = class {
             let done = false
             while (!done) {
                 let item = await iterator.next();
-                let buffer = item.value.value.buffer.toString();
+                let buffer = item.value.value.toString('utf8');
+                console.log(buffer)
                 // let stringTransaction = Buffer.from(buffer).toString();
                 // let transaction = JSON.parse(stringTransaction);
                 history.push(buffer);

@@ -96,11 +96,12 @@ invoke.createChannel('a-stonehenge').then(() => {
     }
     return query.getImageHistory('a-stonehenge', querier, 'stonehenge');
 }).then(result => {
+    console.log(result)
     let regex = new RegExp('\{.*\:\{.*\:.*\}\}', 'g');
     let stringTransaction = regex.exec(result.toString());
     console.log(stringTransaction)
     let json = stringTransaction[0];
-    console.log(JSON.parse(json))
+    // console.log(JSON.parse(json))
 }).catch(err => {
     console.log(err);
 })
