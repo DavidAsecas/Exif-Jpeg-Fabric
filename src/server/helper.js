@@ -131,6 +131,7 @@ module.exports.instantiateChaincode = function (fabric_client, peer0, peer1, ch)
 				// get an eventhub once the fabric client has a user assigned. The user
 				// is required bacause the event registration must be signed
 				let event_hub = channel.newChannelEventHub(p1);
+				let event_hub2 = channel.newChannelEventHub(p2);
 
 				// using resolve the promise so that result status may be processed
 				// under the then clause rather than having the catch clause process
@@ -165,6 +166,37 @@ module.exports.instantiateChaincode = function (fabric_client, peer0, peer1, ch)
 
 				});
 				promises.push(txPromise);
+
+				let txPromise2 = new Promise((resolve, reject) => {
+					let handle = setTimeout(() => {
+						event_hub2.unregisterTxEvent(transaction_id_string);
+						event_hub2.disconnect();
+						resolve({ event_status: 'TIMEOUT' }); //we could use reject(new Error('Trnasaction did not complete within 30 seconds'));
+					}, 40000);
+					event_hub2.registerTxEvent(transaction_id_string, (tx, code) => {
+						// this is the callback for transaction event status
+						// first some clean up of event listener
+						clearTimeout(handle);
+
+						// now let the application know what happened
+						var return_status = { event_status: code, tx_id: transaction_id_string };
+						if (code !== 'VALID') {
+							console.error('The transaction was invalid, code = ' + code);
+							resolve(return_status); // we could use reject(new Error('Problem with the tranaction, event status ::'+code));
+						} else {
+							console.log('The transaction has been committed on peer ' + event_hub.getPeerAddr());
+							resolve(return_status);
+						}
+					}, (err) => {
+						//this is the callback if something goes wrong with the event registration or processing
+						reject(new Error('There was a problem with the eventhub ::' + err));
+					},
+						{ disconnect: true } //disconnect when complete
+					);
+					event_hub2.connect();
+
+				});
+				promises.push(txPromise2);
 
 				return Promise.all(promises);
 			} else {
