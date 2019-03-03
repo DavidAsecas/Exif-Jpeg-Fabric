@@ -1,7 +1,11 @@
 let Fabric_Client = require('fabric-client');
-let path = require('path');
-let fs = require('fs');
-let util = require('util');
+const crypto = require('crypto');
+const sha = crypto.createHash('sha256');
+const path = require('path');
+const fs = require('fs');
+const util = require('util');
+const cp = require('child_process');
+
 let store_path = path.join(__dirname, '..', '..', 'crypto-config/peerOrganizations/app.jpeg.com/ca');
 let chaincode_path = path.join(__dirname, '..', '..', 'chaincode');
 let serverCert = fs.readFileSync(path.join(__dirname, '..', '..', 'crypto-config/peerOrganizations/app.jpeg.com/msp/tlscacerts/tlsca.app.jpeg.com-cert.pem'));
@@ -221,5 +225,22 @@ module.exports.instantiateChaincode = function (fabric_client, peer0, peer1, ch)
 			console.error('Failed to invoke successfully :: ' + err);
 			reject(err);
 		});
+	})
+}
+
+module.exports.hash = function() {
+	return new Promise((resolve, reject) => {
+		fs.readFile(path.join('..', '..', 'stonehenge.jpg'), function(err, data) {
+			sha.update(data);
+			let hash = sha.digest('hex');
+			resolve(hash);
+		});
+	})
+}
+
+module.exports.putMetadata = function(channel) {
+	return new Promise((resolve, reject) => {
+		cp.spawn('python', [channel]);
+		resolve('Metadata updated');
 	})
 }
