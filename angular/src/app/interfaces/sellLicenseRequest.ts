@@ -1,6 +1,6 @@
 import { User } from "./user";
 
-export interface SellLicenseRequest {
+export class SellLicenseRequest {
     seller: User;
     buyer: User;
     channel: string;

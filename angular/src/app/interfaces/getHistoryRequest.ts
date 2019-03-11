@@ -1,6 +1,6 @@
 import { User } from "./user";
 
-export interface GetHistoryRequest {
+export class GetHistoryRequest {
     querier: User;
     channel: string;
     imageId: string;

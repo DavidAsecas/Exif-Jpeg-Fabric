@@ -1,11 +1,11 @@
-export interface Transaction {
+export class Transaction {
     idImage: string;
     hashImagem: string;
     newOwner: string;
     license: License;
 }
 
-export interface License {
+export class License {
     adapt: boolean;
     diminish: boolean;
     embed: boolean;

@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 let router = express.Router();
 
-router.post('/newOwner', function (req, res) {
+router.post('/sellLicense', function (req, res) {
     let channel = req.body.channel;
     let org = req.body.org;
     let image = req.body.image;
@@ -27,7 +27,7 @@ router.post('/newOwner', function (req, res) {
         })
 })
 
-router.get('/queryOwner', function (req, res) {
+router.get('/getHistory', function (req, res) {
     let channel = req.query.channel;
     let org = req.query.org;
     let image = req.query.image;

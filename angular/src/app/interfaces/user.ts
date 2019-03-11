@@ -1,4 +1,4 @@
-export interface User {
+export class User {
     userName: string;
     peer: string;
     url: string;
