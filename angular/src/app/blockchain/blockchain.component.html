@@ -19,12 +19,12 @@
     </span>
     <span>
       Imagen modificada?
-      <input type="checkbox" [(ngModel)]="theCheckbox" data-md-icheck (change)="toggleVisibility($event)"/>
+      <!-- <input type="checkbox" [(ngModel)]="theCheckbox" data-md-icheck (change)="toggleVisibility($event)"/> -->
     </span>
   </span>
   <div style="text-align: center">
-      <button type="button" class="btn btn-primary" (click)='sellLicense()'>Sell</button>
-      <button type="button" class="btn btn-primary" (click)='getHistory()'>History</button>
+      <button type="button" class="btn btn-primary" (click)='sellLicense(seller.value, buyer.value)'>Sell</button>
+      <button type="button" class="btn btn-primary" (click)='getHistory(seller.value)'>History</button>
   </div>
   <code>
     <pre>

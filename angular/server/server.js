@@ -3,6 +3,9 @@ let app = express();
 const bodyParser = require('body-parser');
 const query = require('./query');
 const invoke = require('./invoke');
+const helper = require('./helper');
+let Fabric_Client = require('fabric-client');
+let client = new Fabric_Client();
 let cors = require('cors');
 
 app.use(cors())
@@ -13,27 +16,49 @@ app.use(bodyParser.urlencoded({ extended: true }));
 let router = express.Router();
 
 router.post('/sellLicense', function (req, res) {
+    let seller = req.body.seller;
+    let buyer = req.body.buyer;
     let channel = req.body.channel;
-    let org = req.body.org;
-    let image = req.body.image;
-    let owner = req.body.owner;
+    let transaction = req.body.transaction;
 
     console.log(req.body);
-    invoke.newOwnerTransaction(channel, org, image, owner)
-        .then(res => {
-            res.status(200).send({
-                message: message
-            })
-        })
+    invoke.createChannel(channel).then(() => {
+        return invoke.joinChannel(channel, seller.url, seller.peer);
+    }).then(() => {
+        return helper.installChaincode(client, seller.url, seller.peer);
+    }).then(() => {
+        return invoke.joinChannel(channel, buyer.url, buyer.peer);
+    }).then(() => {
+        return helper.installChaincode(client, buyer.url, buyer.peer);
+    }).then(() => {
+        let p1 = {
+            peer: seller.peer,
+            url: seller.url
+        };
+
+        let p2 = {
+            peer: buyer.peer,
+            url: buyer.url
+        };
+
+        return helper.instantiateChaincode(client, p1, p2, channel);
+    }).then(() => {
+        let stringTransaction = JSON.stringify(transaction);
+        return invoke.newTransaction(seller, buyer, channel, stringTransaction);
+    }).then(res => {
+        res.status(200).send({
+            message: res
+        });
+    });
 })
 
 router.get('/getHistory', function (req, res) {
     let channel = req.query.channel;
-    let org = req.query.org;
-    let image = req.query.image;
+    let querier = req.query.querier;
+    let imagen = req.query.imagen;
 
     console.log(req.query)
-    query.queryToChannel(channel, org, image)
+    query.getImageHistory(channel, querier, imagen)
         .then(queryResponse => {
             console.log(queryResponse)
             res.status(200).send({

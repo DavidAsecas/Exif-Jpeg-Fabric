@@ -12,9 +12,10 @@ export class BlockchainComponent {
     history: string;
     constructor(private fabricService: FabricService) { }
 
-    sellLicense(channel: string, seller: string, buyer: string) {
+    sellLicense(seller: string, buyer: string) {
         let userSeller = this.getUserInfo(seller);
         let userBuyer = this.getUserInfo(buyer);
+        let channel = seller + '-stonehenge';
         let request = new SellLicenseRequest();
         request = {
             seller: userSeller,
@@ -28,8 +29,9 @@ export class BlockchainComponent {
             })
     }
 
-    getHistory(channel: string, querier: string) {
+    getHistory(querier: string) {
         let userQuerier = this.getUserInfo(querier);
+        let channel = querier + '-stonehenge';
         let request = new GetHistoryRequest();
         request = {
             channel: channel,

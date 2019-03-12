@@ -9,8 +9,8 @@ import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
 })
 export class FabricService {
 
-    private queryUrl = 'http://localhost:3000/api/sellLicense';
-    private transactionUrl = 'http://localhost:3000/api/getHistory'
+    private queryUrl = 'http://localhost:3000/api/getHistory';
+    private transactionUrl = 'http://localhost:3000/api/sellLicense'
 
     constructor(private http: HttpClient) { }
 
