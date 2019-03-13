@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SellLicenseRequest } from '../interfaces/sellLicenseRequest';
 import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
+import { JsonPipe } from '@angular/common';
 
 @Injectable({
     providedIn: 'root'

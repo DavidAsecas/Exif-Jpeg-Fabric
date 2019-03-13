@@ -3,6 +3,7 @@ import { FabricService } from '../services/fabric.service';
 import { SellLicenseRequest } from '../interfaces/sellLicenseRequest';
 import { User } from '../interfaces/user';
 import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
+import { stringify } from '@angular/core/src/util';
 
 @Component({
     selector: 'pm-block',
@@ -12,16 +13,15 @@ export class BlockchainComponent {
     history: string;
     constructor(private fabricService: FabricService) { }
 
-    sellLicense(seller: string, buyer: string) {
+    sellLicense(channel: string, seller: string, buyer: string) {
         let userSeller = this.getUserInfo(seller);
         let userBuyer = this.getUserInfo(buyer);
-        let channel = seller + '-stonehenge';
         let request = new SellLicenseRequest();
         request = {
             seller: userSeller,
             buyer: userBuyer,
             channel: channel,
-            transaction: null
+            transaction: ""
         }
         this.fabricService.sellLicense(request)
             .subscribe(res => {
@@ -29,9 +29,8 @@ export class BlockchainComponent {
             })
     }
 
-    getHistory(querier: string) {
+    getHistory(channel: string, querier: string) {
         let userQuerier = this.getUserInfo(querier);
-        let channel = querier + '-stonehenge';
         let request = new GetHistoryRequest();
         request = {
             channel: channel,

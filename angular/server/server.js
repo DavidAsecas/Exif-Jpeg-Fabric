@@ -53,19 +53,20 @@ router.post('/sellLicense', function (req, res) {
 })
 
 router.get('/getHistory', function (req, res) {
-    let channel = req.query.channel;
-    let querier = req.query.querier;
-    let imagen = req.query.imagen;
+    let request = JSON.parse(req.query.request)
+    let channel = request.channel;
+    let querier = request.querier;
+    let imagen = request.imageId;
 
-    console.log(req.query)
+    console.log(request)
     query.getImageHistory(channel, querier, imagen)
         .then(queryResponse => {
             console.log(queryResponse)
+            let res = JSON.parse("[" + queryResponse.toString() + "]");
             res.status(200).send({
-                queryResponse: queryResponse
+                queryResponse: res
             })
         })
-
 })
 
 app.use('/api', router)

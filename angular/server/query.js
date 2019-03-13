@@ -16,7 +16,7 @@ module.exports.getImageHistory = function (ch, querier, imagen) {
 		let store_path = path.join(__dirname, '..', '..', 'crypto-config/peerOrganizations/app.jpeg.com/ca');
 		console.log('Store path:' + store_path);
 
-		return helper.loadUser(fabric_client, querier.user).then((user_from_store) => {
+		return helper.loadUser(fabric_client, querier.userName).then((user_from_store) => {
 			let request = {
 				chaincodeId: 'jpeg',
 				fcn: 'GetImageHistory',
