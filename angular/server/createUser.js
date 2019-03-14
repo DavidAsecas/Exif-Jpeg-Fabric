@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 function createUser () {
-    let userName = 'User2';
+    let userName = 'User5';
     let fabric_client = new Fabric_Client();
     let user = null;
     let store_path = path.join(__dirname, '..', '..', 'crypto-config/peerOrganizations/app.jpeg.com/ca');
@@ -33,7 +33,7 @@ function createUser () {
             verify: false
         }
         return fabric_client.createUser({
-            username: userName,
+            username: userName.charAt(0).toUpperCase() + userName.slice(1),
             mspid: 'AppMSP',
             cryptoContent: {
                 privateKey: privateKey,
@@ -54,4 +54,4 @@ function createUser () {
     });
 }
 
-createUser(process.argv0);
+createUser();

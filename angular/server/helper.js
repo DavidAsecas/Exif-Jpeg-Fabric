@@ -26,7 +26,8 @@ module.exports.loadUser = function (fabric_client, user) {
 			fabric_client.setCryptoSuite(crypto_suite);
 
 			// get the enrolled user from persistence, this user will sign all requests
-			return fabric_client.getUserContext(user, true);
+			let userName = user.charAt(0).toUpperCase() + user.slice(1);
+			return fabric_client.getUserContext(userName, true);
 		}).then((user_from_store) => {
 			if (user_from_store && user_from_store.isEnrolled()) {
 				console.log('Successfully loaded ' + user + ' from persistence');

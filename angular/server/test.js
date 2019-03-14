@@ -4,12 +4,12 @@ let helper = require('./helper');
 let Fabric_Client = require('fabric-client');
 let client = new Fabric_Client();
 
-invoke.createChannel('a-stonehenge').then(() => {
-    return invoke.joinChannel('a-stonehenge', 'grpcs://localhost:7051', 'peer0');
+invoke.createChannel('user1-stonehenge').then(() => {
+    return invoke.joinChannel('user1-stonehenge', 'grpcs://localhost:7051', 'peer0');
 }).then(() => {
     return helper.installChaincode(client, 'grpcs://localhost:7051', 'peer0');
 }).then(() => {
-    return invoke.joinChannel('a-stonehenge', 'grpcs://localhost:7151', 'peer1');
+    return invoke.joinChannel('user1-stonehenge', 'grpcs://localhost:7151', 'peer1');
 }).then(() => {
     return helper.installChaincode(client, 'grpcs://localhost:7151', 'peer1');
 }).then(() => {
@@ -23,12 +23,12 @@ invoke.createChannel('a-stonehenge').then(() => {
         url: 'grpcs://localhost:7151'
     }
 
-    return helper.instantiateChaincode(client, peer0, peer1, 'a-stonehenge');
+    return helper.instantiateChaincode(client, peer0, peer1, 'user1-stonehenge');
 }).then(() => {
     let transaction = {
         idImagen: 'stonehenge',
         hashImagen: 'hash',
-        newOwner: 'User2',
+        newOwner: 'user2',
         license: {
             adapt: true,
             diminish: false,
@@ -45,22 +45,22 @@ invoke.createChannel('a-stonehenge').then(() => {
     let stringTransaction = JSON.stringify(transaction);
 
     let seller = {
-        user: 'User1',
+        user: 'user1',
         peer: 'peer0',
         url: 'grpcs://localhost:7051'
     };
 
     let buyer = {
-        user: 'User2',
+        user: 'user2',
         peer: 'peer1',
         url: 'grpcs://localhost:7151'
     }
-    return invoke.newTransaction(seller, buyer, 'a-stonehenge', stringTransaction);
+    return invoke.newTransaction(seller, buyer, 'user1-stonehenge', stringTransaction);
 }).then(() => {
     let transaction = {
         idImagen: 'stonehenge',
         hashImagen: 'hash',
-        newOwner: 'User1',
+        newOwner: 'user1',
         license: {
             adapt: true,
             diminish: true,
@@ -77,24 +77,24 @@ invoke.createChannel('a-stonehenge').then(() => {
     let stringTransaction = JSON.stringify(transaction);
 
     let seller = {
-        user: 'User2',
+        user: 'user2',
         peer: 'peer1',
         url: 'grpcs://localhost:7151'
     }
 
     let buyer = {
-        user: 'User1',
+        user: 'user1',
         peer: 'peer0',
         url: 'grpcs://localhost:7051'
     }
-    return invoke.newTransaction(seller, buyer, 'a-stonehenge', stringTransaction)
+    return invoke.newTransaction(seller, buyer, 'user1-stonehenge', stringTransaction)
 }).then(() => {
     let querier = {
-        user: 'User1',
+        user: 'user1',
         peer: 'peer0',
         url: 'grpcs://localhost:7051'
     }
-    return query.getImageHistory('a-stonehenge', querier, 'stonehenge');
+    return query.getImageHistory('user1-stonehenge', querier, 'stonehenge');
 }).then(result => {
     // let regex = new RegExp('\{.*\:\{.*\:.*\}\}', 'g');
     // let stringTransaction = regex.exec(result.toString());

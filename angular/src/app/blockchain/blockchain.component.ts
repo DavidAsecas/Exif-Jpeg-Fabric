@@ -3,7 +3,7 @@ import { FabricService } from '../services/fabric.service';
 import { SellLicenseRequest } from '../interfaces/sellLicenseRequest';
 import { User } from '../interfaces/user';
 import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
-import { stringify } from '@angular/core/src/util';
+import { Transaction, License } from '../interfaces/transaction';
 
 @Component({
     selector: 'pm-block',
@@ -17,11 +17,29 @@ export class BlockchainComponent {
         let userSeller = this.getUserInfo(seller);
         let userBuyer = this.getUserInfo(buyer);
         let request = new SellLicenseRequest();
+        let license: License = {
+            adapt: true,
+            diminish: true,
+            embed: false,
+            enhance: false,
+            enlarge: true,
+            issue: false,
+            modify: false,
+            play: true,
+            print: true,
+            reduce: true
+        }
+        let transaction: Transaction = {
+            idImage: 'stonehenge',
+            hashImage: 'hash',
+            newOwner: userBuyer.userName,
+            license: license
+        }
         request = {
             seller: userSeller,
             buyer: userBuyer,
             channel: channel,
-            transaction: ""
+            transaction: JSON.stringify(transaction)
         }
         this.fabricService.sellLicense(request)
             .subscribe(res => {

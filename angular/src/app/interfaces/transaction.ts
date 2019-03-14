@@ -1,6 +1,6 @@
 export class Transaction {
     idImage: string;
-    hashImagem: string;
+    hashImage: string;
     newOwner: string;
     license: License;
 }
