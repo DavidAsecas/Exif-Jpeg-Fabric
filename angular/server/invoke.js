@@ -113,7 +113,7 @@ module.exports.newTransaction = function (seller, buyer, ch, transaction) {
 		var tx_id = null;
 
 		// create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
-		helper.loadUser(fabric_client, seller.user).then(user_from_store => {
+		helper.loadUser(fabric_client, seller.userName).then(user_from_store => {
 			// get a transaction id object based on the current user assigned to fabric client
 			tx_id = fabric_client.newTransactionID();
 			console.log("Assigning transaction_id: ", tx_id._transaction_id);

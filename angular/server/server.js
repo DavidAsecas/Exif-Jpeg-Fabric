@@ -43,11 +43,13 @@ router.post('/sellLicense', function (req, res) {
 
         return helper.instantiateChaincode(client, p1, p2, channel);
     }).then(() => {
+        console.log(transaction)
         let stringTransaction = JSON.stringify(transaction);
-        return invoke.newTransaction(seller, buyer, channel, stringTransaction);
-    }).then(res => {
+        console.log(stringTransaction)
+        return invoke.newTransaction(seller, buyer, channel, transaction);
+    }).then(response => {
         res.status(200).send({
-            message: res
+            message: response
         });
     });
 })
@@ -61,10 +63,10 @@ router.get('/getHistory', function (req, res) {
     console.log(request)
     query.getImageHistory(channel, querier, imagen)
         .then(queryResponse => {
-            console.log(queryResponse)
-            let res = JSON.parse("[" + queryResponse.toString() + "]");
+            console.log(queryResponse.toString())
+            let response = JSON.parse("[" + queryResponse.toString() + "]");
             res.status(200).send({
-                queryResponse: res
+                queryResponse: response
             })
         })
 })

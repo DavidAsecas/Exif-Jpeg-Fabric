@@ -37,24 +37,25 @@ const Chaincode = class {
         console.info(args);
         let stringTransaction = args[0];
         let transaction = JSON.parse(stringTransaction);
-        let idImagen = transaction.idImagen;
+        let idImage = transaction.idImage;
         stringTransaction = JSON.stringify(transaction);
         console.log(stringTransaction);
         try {
-            return await stub.putState(idImagen, Buffer.from(stringTransaction));
+            return await stub.putState(idImage, Buffer.from(stringTransaction));
         } catch (e) {
             return shim.error(e);
         }
     }
 
     async GetImageHistory(stub, args) {
-        let idImagen = args[0];
+        let idImage = args[0];
         try {
-            let iterator = await stub.getHistoryForKey(idImagen);
+            let iterator = await stub.getHistoryForKey(idImage);
             let history = [];
             let done = false
             while (!done) {
                 let item = await iterator.next();
+                console.log(item)
                 let buffer = item.value.value.toString('utf8');
                 console.log(buffer)
                 // let stringTransaction = Buffer.from(buffer).toString();

@@ -10,7 +10,15 @@ import { Transaction, License } from '../interfaces/transaction';
     templateUrl: './blockchain.component.html'
 })
 export class BlockchainComponent {
-    history: string;
+    
+    private _History : Transaction;
+    public get History() : Transaction {
+        return this._History;
+    }
+    public set History(v : Transaction) {
+        this._History = v;
+    }
+    
     constructor(private fabricService: FabricService) { }
 
     sellLicense(channel: string, seller: string, buyer: string) {
@@ -58,41 +66,47 @@ export class BlockchainComponent {
         this.fabricService.getHistory(request)
             .subscribe(res => {
                 console.log(res);
+                this._History = res.queryResponse;
             })
     }
 
     getUserInfo(userName: string): User {
         let user: User;
         switch (userName) {
-            case 'User1':
+            case 'user1':
                 return user = {
                     userName: userName,
                     peer: 'peer0',
-                    url: 'grpcs://localhost:7051'
+                    url: 'grpcs://localhost:7051',
+                    ca: 'User1@app.jpeg.com'
                 };
-            case 'User2':
+            case 'user2':
                 return user = {
                     userName: userName,
                     peer: 'peer1',
-                    url: 'grpcs://localhost:7151'
+                    url: 'grpcs://localhost:7151',
+                    ca: 'User2@app.jpeg.com'
                 };
-            case 'User3':
+            case 'user3':
                 return user = {
                     userName: userName,
                     peer: 'peer2',
-                    url: 'grpcs://localhost:7251'
+                    url: 'grpcs://localhost:7251',
+                    ca: 'User3@app.jpeg.com'
                 };
-            case 'User4':
+            case 'user4':
                 return user = {
                     userName: userName,
                     peer: 'peer3',
-                    url: 'grpcs://localhost:7351'
+                    url: 'grpcs://localhost:7351',
+                    ca: 'User4@app.jpeg.com'
                 };
-            case 'User5':
+            case 'user5':
                 return user = {
                     userName: userName,
                     peer: 'peer4',
-                    url: 'grpcs://localhost:7451'
+                    url: 'grpcs://localhost:7451',
+                    ca: 'User5@app.jpeg.com'
                 };
             default:
                 return null;
