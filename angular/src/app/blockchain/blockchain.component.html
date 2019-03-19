@@ -34,7 +34,14 @@
   <div style="text-align: center">
       <button type="button" class="btn btn-primary" (click)='sellLicense(channel.value, seller.value, buyer.value)'>Sell</button>
       <button type="button" class="btn btn-primary" (click)='getHistory(channel.value, seller.value)'>History</button>
-  </div>
+      <ng-multiselect-dropdown
+        [placeholder]="'License options'"
+        [data]="dropdownList"
+        [settings]="dropdownSettings"
+        (onSelect)="onItemSelect($event)"
+        (onDeSelect)="onItemDeselect($event)">
+      </ng-multiselect-dropdown>
+    </div>
   <code>
     <pre>
       {{_History | json}}

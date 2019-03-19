@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FabricService } from '../services/fabric.service';
 import { SellLicenseRequest } from '../interfaces/sellLicenseRequest';
 import { User } from '../interfaces/user';
@@ -9,39 +9,85 @@ import { Transaction, License } from '../interfaces/transaction';
     selector: 'pm-block',
     templateUrl: './blockchain.component.html'
 })
-export class BlockchainComponent {
-    
-    private _History : Transaction;
-    public get History() : Transaction {
+export class BlockchainComponent implements OnInit {
+
+    private _History: Transaction;
+    public get History(): Transaction {
         return this._History;
     }
-    public set History(v : Transaction) {
+    public set History(v: Transaction) {
         this._History = v;
     }
-    
+
+    private _License: License;
+    public get License(): License {
+        return this._License;
+    }
+    public set License(v: License) {
+        this._License = v;
+    }
+    dropdownList = [];
+    dropdownSettings = {};
+
     constructor(private fabricService: FabricService) { }
+
+    ngOnInit(): void {
+
+        this._License = {
+            adapt: false,
+            diminish: false,
+            embed: false,
+            enhance: false,
+            enlarge: false,
+            issue: false,
+            modify: false,
+            play: false,
+            print: false,
+            reduce: false
+        }
+
+        this.dropdownList = [
+            {item_id: 1, item_text: "adapt"},
+            {item_id: 2, item_text: "diminish"},
+            {item_id: 3, item_text: "embed"},
+            {item_id: 4, item_text: "enhance"},
+            {item_id: 5, item_text: "enlarge"},
+            {item_id: 6, item_text: "issue"},
+            {item_id: 7, item_text: "modify"},
+            {item_id: 8, item_text: "play"},
+            {item_id: 9, item_text: "print"},
+            {item_id: 10, item_text: "reduce"},
+        ]
+
+        this.dropdownSettings = {
+            singleSelection: false,
+            idField: 'item_id',
+            textField: 'item_text',
+            itemsShowLimit: 5,
+            allowSearchFilter: false,
+            enableCheckAll: false
+        };
+    }
+
+    onItemSelect(item: any) {
+        this._License[item.item_text] = true;
+        console.log(this._License);
+    }
+
+    onItemDeselect(item: any) {
+        this._License[item.item_text] = false;
+        console.log(this._License);
+    }
 
     sellLicense(channel: string, seller: string, buyer: string) {
         let userSeller = this.getUserInfo(seller);
         let userBuyer = this.getUserInfo(buyer);
         let request = new SellLicenseRequest();
-        let license: License = {
-            adapt: true,
-            diminish: true,
-            embed: false,
-            enhance: false,
-            enlarge: true,
-            issue: false,
-            modify: false,
-            play: true,
-            print: true,
-            reduce: true
-        }
         let transaction: Transaction = {
             idImage: 'stonehenge',
             hashImage: 'hash',
             newOwner: userBuyer.userName,
-            license: license
+            license: this._License
         }
         request = {
             seller: userSeller,
