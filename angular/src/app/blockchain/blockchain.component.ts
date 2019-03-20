@@ -29,6 +29,8 @@ export class BlockchainComponent implements OnInit {
     dropdownList = [];
     dropdownSettings = {};
 
+    checkbox = false;
+
     constructor(private fabricService: FabricService) { }
 
     ngOnInit(): void {
@@ -72,7 +74,7 @@ export class BlockchainComponent implements OnInit {
     onItemSelect(item: any) {
         this._License[item.item_text] = true;
         console.log(this._License);
-    }
+    }   
 
     onItemDeselect(item: any) {
         this._License[item.item_text] = false;

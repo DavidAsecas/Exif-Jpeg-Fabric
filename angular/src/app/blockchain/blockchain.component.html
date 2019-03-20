@@ -1,49 +1,51 @@
-<span style="text-align: center">
-    <span>
-      <select #seller>
-          <option value="user1">User 1</option>
-          <option value="user2">User 2</option>
-          <option value="user3">User 3</option>
-          <option value="user4">User 4</option>
-          <option value="user5">User 5</option>
-      </select>
-    </span>
-    <span>
-      <select #buyer>
-          <option value="user1">User 1</option>
-          <option value="user2">User 2</option>
-          <option value="user3">User 3</option>
-          <option value="user4">User 4</option>
-          <option value="user5">User 5</option>
-      </select>
-    </span>
-    <span>
-      <select #channel>
-          <option value="user1-stonehenge">User1-stonehenge</option>
-          <option value="user2-stonehenge">User2-stonehenge</option>
-          <option value="user3-stonehenge">User3-stonehenge</option>
-          <option value="user4-stonehenge">User4-stonehenge</option>
-          <option value="user5-stonehenge">User5-stonehenge</option>
-      </select>
-    </span>
-    <span>
-      Imagen modificada?
-      <!-- <input type="checkbox" [(ngModel)]="theCheckbox" data-md-icheck (change)="toggleVisibility($event)"/> -->
-    </span>
+<div style="text-align: center; margin: 50px">
+  <span style="float: left;">
+    <select #seller>
+      <option value="user1">User 1</option>
+      <option value="user2">User 2</option>
+      <option value="user3">User 3</option>
+      <option value="user4">User 4</option>
+      <option value="user5">User 5</option>
+    </select>
   </span>
-  <div style="text-align: center">
-      <button type="button" class="btn btn-primary" (click)='sellLicense(channel.value, seller.value, buyer.value)'>Sell</button>
-      <button type="button" class="btn btn-primary" (click)='getHistory(channel.value, seller.value)'>History</button>
-      <ng-multiselect-dropdown
-        [placeholder]="'License options'"
-        [data]="dropdownList"
-        [settings]="dropdownSettings"
-        (onSelect)="onItemSelect($event)"
-        (onDeSelect)="onItemDeselect($event)">
-      </ng-multiselect-dropdown>
-    </div>
-  <code>
-    <pre>
-      {{_History | json}}
-    </pre>
-  </code>
+  <span style="float: left;">
+    <select #buyer>
+      <option value="user1">User 1</option>
+      <option value="user2">User 2</option>
+      <option value="user3">User 3</option>
+      <option value="user4">User 4</option>
+      <option value="user5">User 5</option>
+    </select>
+  </span>
+  <span>
+    <select #channel>
+      <option value="user1-stonehenge">User1-stonehenge</option>
+      <option value="user2-stonehenge">User2-stonehenge</option>
+      <option value="user3-stonehenge">User3-stonehenge</option>
+      <option value="user4-stonehenge">User4-stonehenge</option>
+      <option value="user5-stonehenge">User5-stonehenge</option>
+    </select>
+  </span>
+  <span>
+  </span>
+  <div style="float: right">
+    Imagen modificada?
+    <input type="checkbox" [(ngModel)]="checkbox" />
+  </div>
+</div>
+<div style="text-align: center; margin: 25px;">
+  <button type="button" class="btn btn-primary" (click)='sellLicense(channel.value, seller.value, buyer.value)'
+    style="margin: 5px">Sell</button>
+  <button type="button" class="btn btn-primary" (click)='getHistory(channel.value, seller.value)'
+    style="margin: 5px">History</button>
+</div>
+<div style="width: 200px; margin: auto">
+  <ng-multiselect-dropdown [placeholder]="'License options'" [data]="dropdownList" [settings]="dropdownSettings"
+    (onSelect)="onItemSelect($event)" (onDeSelect)="onItemDeselect($event)" style="width: 100px">
+  </ng-multiselect-dropdown>
+</div>
+<code style="text-align: center">
+  <pre>
+    {{_History | json}}
+  </pre>
+</code>
