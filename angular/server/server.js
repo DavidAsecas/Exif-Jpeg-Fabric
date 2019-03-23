@@ -71,6 +71,23 @@ router.get('/getHistory', function (req, res) {
         })
 })
 
+router.get('/getHash', function (req, res) {
+    helper.hash().then(hash => {
+        res.status(200).send({
+            hash : hash
+        })
+    })
+})
+
+router.post('/putMetadata', function (req, res) {
+    let channel = req.body;
+    helper.putMetadata(channel).then(msg => {
+        res.status(200).send({
+            message: msg
+        })
+    })
+})
+
 app.use('/api', router)
 
 app.listen(3000, function () {

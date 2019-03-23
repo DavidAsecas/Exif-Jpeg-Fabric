@@ -4,6 +4,7 @@ import { SellLicenseRequest } from '../interfaces/sellLicenseRequest';
 import { User } from '../interfaces/user';
 import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
 import { Transaction, License } from '../interfaces/transaction';
+import { ImageService } from '../services/hash.service';
 
 @Component({
     selector: 'pm-block',
@@ -31,7 +32,7 @@ export class BlockchainComponent implements OnInit {
 
     checkbox = false;
 
-    constructor(private fabricService: FabricService) { }
+    constructor(private fabricService: FabricService, private imageService: ImageService) { }
 
     ngOnInit(): void {
 
@@ -73,24 +74,30 @@ export class BlockchainComponent implements OnInit {
 
     onItemSelect(item: any) {
         this._License[item.item_text] = true;
-        console.log(this._License);
     }   
 
     onItemDeselect(item: any) {
         this._License[item.item_text] = false;
-        console.log(this._License);
     }
 
     sellLicense(channel: string, seller: string, buyer: string) {
         let userSeller = this.getUserInfo(seller);
         let userBuyer = this.getUserInfo(buyer);
         let request = new SellLicenseRequest();
+        let hash;
+        this.imageService.getHash().subscribe(res => {
+            hash = res.hash;
+        })
+        this.imageService.putMetadata(channel).subscribe(res => {
+            console.log(res.message);
+        })
         let transaction: Transaction = {
             idImage: 'stonehenge',
-            hashImage: 'hash',
+            hashImage: hash,
             newOwner: userBuyer.userName,
             license: this._License
         }
+        console.log(transaction)
         request = {
             seller: userSeller,
             buyer: userBuyer,
