@@ -85,29 +85,32 @@ export class BlockchainComponent implements OnInit {
         let userBuyer = this.getUserInfo(buyer);
         let request = new SellLicenseRequest();
         let hash;
-        this.imageService.getHash().subscribe(res => {
+        this.imageService.getHash().toPromise().then(res => {
             hash = res.hash;
-        })
-        this.imageService.putMetadata(channel).subscribe(res => {
+            console.log(hash)
+        }).then(() => {
+            return this.imageService.putMetadata(channel).toPromise();
+        }).then(res => {
             console.log(res.message);
+        }).then(() => {
+            let transaction: Transaction = {
+                idImage: 'stonehenge',
+                hashImage: hash,
+                newOwner: userBuyer.userName,
+                license: this._License
+            }
+            console.log(transaction)
+            request = {
+                seller: userSeller,
+                buyer: userBuyer,
+                channel: channel,
+                transaction: JSON.stringify(transaction)
+            }
+            this.fabricService.sellLicense(request)
+                .subscribe(res => {
+                    console.log(res);
+                })
         })
-        let transaction: Transaction = {
-            idImage: 'stonehenge',
-            hashImage: hash,
-            newOwner: userBuyer.userName,
-            license: this._License
-        }
-        console.log(transaction)
-        request = {
-            seller: userSeller,
-            buyer: userBuyer,
-            channel: channel,
-            transaction: JSON.stringify(transaction)
-        }
-        this.fabricService.sellLicense(request)
-            .subscribe(res => {
-                console.log(res);
-            })
     }
 
     getHistory(channel: string, querier: string) {

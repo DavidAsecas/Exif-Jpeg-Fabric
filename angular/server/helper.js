@@ -1,6 +1,5 @@
 let Fabric_Client = require('fabric-client');
 const crypto = require('crypto');
-const sha = crypto.createHash('sha256');
 const path = require('path');
 const fs = require('fs');
 const util = require('util');
@@ -189,7 +188,7 @@ module.exports.instantiateChaincode = function (fabric_client, peer0, peer1, ch)
 							console.error('The transaction was invalid, code = ' + code);
 							resolve(return_status); // we could use reject(new Error('Problem with the tranaction, event status ::'+code));
 						} else {
-							console.log('The transaction has been committed on peer ' + event_hub.getPeerAddr());
+							console.log('The transaction has been committed on peer ' + event_hub2.getPeerAddr());
 							resolve(return_status);
 						}
 					}, (err) => {
@@ -232,6 +231,7 @@ module.exports.instantiateChaincode = function (fabric_client, peer0, peer1, ch)
 module.exports.hash = function() {
 	return new Promise((resolve, reject) => {
 		fs.readFile(path.join('..', '..', 'stonehenge.jpg'), function(err, data) {
+			let sha = crypto.createHash('sha256');
 			sha.update(data);
 			let hash = sha.digest('hex');
 			resolve(hash);
