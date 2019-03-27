@@ -108,12 +108,13 @@ export class BlockchainComponent implements OnInit {
             }
             this.fabricService.sellLicense(request)
                 .subscribe(res => {
-                    console.log(res);
+                    console.log(res.message);
                 })
         })
     }
 
     getHistory(channel: string, querier: string) {
+        this._History = new Transaction();
         let userQuerier = this.getUserInfo(querier);
         let request = new GetHistoryRequest();
         request = {

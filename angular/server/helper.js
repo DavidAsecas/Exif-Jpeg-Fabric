@@ -97,7 +97,7 @@ module.exports.instantiateChaincode = function (fabric_client, peer0, peer1, ch)
 				chaincodeId: 'jpeg',
 				txId: txId
 			}
-			return channel.sendInstantiateProposal(request, 60000);
+			return channel.sendInstantiateProposal(request, 120000);
 		}).then(results => {
 			var proposalResponses = results[0];
 			var proposal = results[1];

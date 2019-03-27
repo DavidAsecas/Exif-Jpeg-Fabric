@@ -46,3 +46,23 @@ module.exports.getImageHistory = function (ch, querier, imagen) {
 		});
 	})
 }
+
+module.exports.getChannels = function (querier) {
+	return new Promise((resolve, reject) => {
+		let fabric_client = new Fabric_Client();
+		let serverCert = fs.readFileSync(path.join(__dirname, '..', '..', 'crypto-config/peerOrganizations/app.jpeg.com/msp/tlscacerts/tlsca.app.jpeg.com-cert.pem'));
+		let peer = fabric_client.newPeer(querier.url, {
+			pem: Buffer.from(serverCert).toString(),
+			"ssl-target-name-override": querier.peer + '.app.jpeg.com'
+		});
+		return helper.loadUser(fabric_client, querier.userName).then((user_from_store) => {
+			return fabric_client.queryChannels(peer, false);
+		}).then(response => {
+			let channels = [];
+			response.channels.forEach(function(channel) {
+				channels.push(channel.channel_id);
+			})
+			resolve(channels);
+		})
+	})
+}
