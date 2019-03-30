@@ -22,9 +22,10 @@ export class ImageService {
     }
 
     putMetadata(channel: string): Observable<any> {
+        let body = {channel: channel}
         const headers = new HttpHeaders()
-            .set('Content-Type', 'text/plain');
-        return this.http.post(this.putMetadataUrl, channel, {
+            .set('Content-Type', 'application/json');
+        return this.http.post(this.putMetadataUrl, body, {
             headers: headers
         });
     }

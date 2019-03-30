@@ -66,21 +66,25 @@ module.exports.installChaincode = function (fabric_client, peerUrl, targetPeer) 
 	})
 }
 
-module.exports.instantiateChaincode = function (fabric_client, peer0, peer1, ch) {
+module.exports.instantiateChaincode = function (fabric_client, users, ch) {
 	return new Promise((resolve, reject) => {
 		let channel = fabric_client.newChannel(ch);
-		let p1 = fabric_client.newPeer(peer0.url, {
-			pem: Buffer.from(serverCert).toString(),
-			"ssl-target-name-override": peer0.peer + '.app.jpeg.com'
+		let peers = [];
+		users.forEach(function(user) {
+			let peer = fabric_client.newPeer(user.url, {
+				pem: Buffer.from(serverCert).toString(),
+				"ssl-target-name-override": user.peer + '.app.jpeg.com'
+			});
+			peers.push(peer);
+			channel.addPeer(peer);
+		})
+		console.log(peers)
+		// let p2 = fabric_client.newPeer(peer1.url, {
+		// 	pem: Buffer.from(serverCert).toString(),
+		// 	"ssl-target-name-override": peer1.peer + '.app.jpeg.com'
 	
-		});
-		let p2 = fabric_client.newPeer(peer1.url, {
-			pem: Buffer.from(serverCert).toString(),
-			"ssl-target-name-override": peer1.peer + '.app.jpeg.com'
-	
-		});
-		channel.addPeer(p1);
-		channel.addPeer(p2);
+		// });
+		// channel.addPeer(p2);
 		let order = fabric_client.newOrderer('grpcs://localhost:7050', {
 			pem: Buffer.from(orderCert).toString(),
 			'ssl-target-name-override': 'orderer.jpeg.com'
@@ -91,7 +95,7 @@ module.exports.instantiateChaincode = function (fabric_client, peer0, peer1, ch)
 		this.loadUser(fabric_client, 'Admin').then(() => {
 			txId = fabric_client.newTransactionID();
 			let request = {
-				targets: [p1,p2],
+				targets: peers,
 				chaincodeType: 'node',
 				chaincodeVersion: 'v1',
 				chaincodeId: 'jpeg',
@@ -134,73 +138,75 @@ module.exports.instantiateChaincode = function (fabric_client, peer0, peer1, ch)
 
 				// get an eventhub once the fabric client has a user assigned. The user
 				// is required bacause the event registration must be signed
-				let event_hub = channel.newChannelEventHub(p1);
-				let event_hub2 = channel.newChannelEventHub(p2);
+				peers.forEach(function(peer) {
+					let event_hub = channel.newChannelEventHub(peer);
+					// let event_hub2 = channel.newChannelEventHub(p2);
+	
+					// using resolve the promise so that result status may be processed
+					// under the then clause rather than having the catch clause process
+					// the status
+					let txPromise = new Promise((resolve, reject) => {
+						let handle = setTimeout(() => {
+							event_hub.unregisterTxEvent(transaction_id_string);
+							event_hub.disconnect();
+							resolve({ event_status: 'TIMEOUT' }); //we could use reject(new Error('Trnasaction did not complete within 30 seconds'));
+						}, 40000);
+						event_hub.registerTxEvent(transaction_id_string, (tx, code) => {
+							// this is the callback for transaction event status
+							// first some clean up of event listener
+							clearTimeout(handle);
+	
+							// now let the application know what happened
+							var return_status = { event_status: code, tx_id: transaction_id_string };
+							if (code !== 'VALID') {
+								console.error('The transaction was invalid, code = ' + code);
+								resolve(return_status); // we could use reject(new Error('Problem with the tranaction, event status ::'+code));
+							} else {
+								console.log('The transaction has been committed on peer ' + event_hub.getPeerAddr());
+								resolve(return_status);
+							}
+						}, (err) => {
+							//this is the callback if something goes wrong with the event registration or processing
+							reject(new Error('There was a problem with the eventhub ::' + err));
+						},
+							{ disconnect: true } //disconnect when complete
+						);
+						event_hub.connect();
+					});
+					promises.push(txPromise);
+				})
+				
 
-				// using resolve the promise so that result status may be processed
-				// under the then clause rather than having the catch clause process
-				// the status
-				let txPromise = new Promise((resolve, reject) => {
-					let handle = setTimeout(() => {
-						event_hub.unregisterTxEvent(transaction_id_string);
-						event_hub.disconnect();
-						resolve({ event_status: 'TIMEOUT' }); //we could use reject(new Error('Trnasaction did not complete within 30 seconds'));
-					}, 40000);
-					event_hub.registerTxEvent(transaction_id_string, (tx, code) => {
-						// this is the callback for transaction event status
-						// first some clean up of event listener
-						clearTimeout(handle);
+				// let txPromise2 = new Promise((resolve, reject) => {
+				// 	let handle = setTimeout(() => {
+				// 		event_hub2.unregisterTxEvent(transaction_id_string);
+				// 		event_hub2.disconnect();
+				// 		resolve({ event_status: 'TIMEOUT' }); //we could use reject(new Error('Trnasaction did not complete within 30 seconds'));
+				// 	}, 40000);
+				// 	event_hub2.registerTxEvent(transaction_id_string, (tx, code) => {
+				// 		// this is the callback for transaction event status
+				// 		// first some clean up of event listener
+				// 		clearTimeout(handle);
 
-						// now let the application know what happened
-						var return_status = { event_status: code, tx_id: transaction_id_string };
-						if (code !== 'VALID') {
-							console.error('The transaction was invalid, code = ' + code);
-							resolve(return_status); // we could use reject(new Error('Problem with the tranaction, event status ::'+code));
-						} else {
-							console.log('The transaction has been committed on peer ' + event_hub.getPeerAddr());
-							resolve(return_status);
-						}
-					}, (err) => {
-						//this is the callback if something goes wrong with the event registration or processing
-						reject(new Error('There was a problem with the eventhub ::' + err));
-					},
-						{ disconnect: true } //disconnect when complete
-					);
-					event_hub.connect();
+				// 		// now let the application know what happened
+				// 		var return_status = { event_status: code, tx_id: transaction_id_string };
+				// 		if (code !== 'VALID') {
+				// 			console.error('The transaction was invalid, code = ' + code);
+				// 			resolve(return_status); // we could use reject(new Error('Problem with the tranaction, event status ::'+code));
+				// 		} else {
+				// 			console.log('The transaction has been committed on peer ' + event_hub2.getPeerAddr());
+				// 			resolve(return_status);
+				// 		}
+				// 	}, (err) => {
+				// 		//this is the callback if something goes wrong with the event registration or processing
+				// 		reject(new Error('There was a problem with the eventhub ::' + err));
+				// 	},
+				// 		{ disconnect: true } //disconnect when complete
+				// 	);
+				// 	event_hub2.connect();
 
-				});
-				promises.push(txPromise);
-
-				let txPromise2 = new Promise((resolve, reject) => {
-					let handle = setTimeout(() => {
-						event_hub2.unregisterTxEvent(transaction_id_string);
-						event_hub2.disconnect();
-						resolve({ event_status: 'TIMEOUT' }); //we could use reject(new Error('Trnasaction did not complete within 30 seconds'));
-					}, 40000);
-					event_hub2.registerTxEvent(transaction_id_string, (tx, code) => {
-						// this is the callback for transaction event status
-						// first some clean up of event listener
-						clearTimeout(handle);
-
-						// now let the application know what happened
-						var return_status = { event_status: code, tx_id: transaction_id_string };
-						if (code !== 'VALID') {
-							console.error('The transaction was invalid, code = ' + code);
-							resolve(return_status); // we could use reject(new Error('Problem with the tranaction, event status ::'+code));
-						} else {
-							console.log('The transaction has been committed on peer ' + event_hub2.getPeerAddr());
-							resolve(return_status);
-						}
-					}, (err) => {
-						//this is the callback if something goes wrong with the event registration or processing
-						reject(new Error('There was a problem with the eventhub ::' + err));
-					},
-						{ disconnect: true } //disconnect when complete
-					);
-					event_hub2.connect();
-
-				});
-				promises.push(txPromise2);
+				// });
+				// promises.push(txPromise2);
 
 				return Promise.all(promises);
 			} else {
@@ -241,7 +247,7 @@ module.exports.hash = function() {
 
 module.exports.putMetadata = function(channel) {
 	return new Promise((resolve, reject) => {
-		cp.spawn('python', [channel]);
-		resolve('Metadata updated');
+		cp.spawn('python', ['putMetadata.py', channel])
+			.on("exit", () => resolve('Metadata updated'));
 	})
 }

@@ -85,13 +85,13 @@ export class BlockchainComponent implements OnInit {
         let userBuyer = this.getUserInfo(buyer);
         let request = new SellLicenseRequest();
         let hash;
-        this.imageService.getHash().toPromise().then(res => {
+        this.imageService.putMetadata(channel).toPromise().then(res => {
+            console.log(res.message);
+        }).then(() => {
+            return this.imageService.getHash().toPromise();
+        }).then(res => {
             hash = res.hash;
             console.log(hash)
-        }).then(() => {
-            return this.imageService.putMetadata(channel).toPromise();
-        }).then(res => {
-            console.log(res.message);
         }).then(() => {
             let transaction: Transaction = {
                 idImage: 'stonehenge',
@@ -99,7 +99,6 @@ export class BlockchainComponent implements OnInit {
                 newOwner: userBuyer.userName,
                 license: this._License
             }
-            console.log(transaction)
             request = {
                 seller: userSeller,
                 buyer: userBuyer,

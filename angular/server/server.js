@@ -20,15 +20,25 @@ router.post('/sellLicense', function (req, res) {
     let buyer = req.body.buyer;
     let channel = req.body.channel;
     let transaction = req.body.transaction;
-    console.log(req.body);
-    query.getChannels(seller).then(channels => {
-        let ch = channels.find(function(element) {
-            return element === channel;
-        })
-        console.log(ch)
-        return ch;
-    }).then(ch => {
-        if (ch === undefined) {
+    let users = [seller, buyer];
+    let promises = [];
+    users.forEach(function (user) {
+        let promise = new Promise((resolve) => {
+            query.getChannels(user).then(chs => {
+                let ch = chs.find(function (element) {
+                    return element === channel;
+                });
+                if(ch === undefined) {
+                    resolve(user);
+                }
+                resolve();
+            });
+        })        
+        promises.push(promise);
+    });
+    Promise.all(promises).then(m => {
+        let matches = m.filter(element => element !== undefined);
+        if (matches.length == 2) {
             invoke.createChannel(channel).then(() => {
                 return invoke.joinChannel(channel, seller.url, seller.peer);
             }).then(() => {
@@ -38,17 +48,17 @@ router.post('/sellLicense', function (req, res) {
             }).then(() => {
                 return helper.installChaincode(client, buyer.url, buyer.peer);
             }).then(() => {
-                let p1 = {
-                    peer: seller.peer,
-                    url: seller.url
-                };
-        
-                let p2 = {
-                    peer: buyer.peer,
-                    url: buyer.url
-                };
-
-                return helper.instantiateChaincode(client, p1, p2, channel);
+                // let p1 = {
+                //     peer: seller.peer,
+                //     url: seller.url
+                // };
+    
+                // let p2 = {
+                //     peer: buyer.peer,
+                //     url: buyer.url
+                // };
+    
+                return helper.instantiateChaincode(client, matches, channel);
             }).then(() => {
                 console.log(transaction)
                 let stringTransaction = JSON.stringify(transaction);
@@ -59,7 +69,23 @@ router.post('/sellLicense', function (req, res) {
                     message: response
                 });
             })
-        } else {
+        } else if (matches.length == 1) {
+            let user = matches[0];
+            invoke.joinChannel(channel, user.url, user.peer).then(() => {
+                return helper.installChaincode(client, user.url, user.peer);
+            }).then(() => {
+                return helper.instantiateChaincode(client, matches, channel);
+            }).then(() => {
+                console.log(transaction)
+                let stringTransaction = JSON.stringify(transaction);
+                console.log(stringTransaction)
+                return invoke.newTransaction(seller, buyer, channel, transaction);
+            }).then(response => {
+                res.status(200).send({
+                    message: response
+                });
+            })
+        } else if (matches.length == 0) {
             invoke.newTransaction(seller, buyer, channel, transaction).then(response => {
                 res.status(200).send({
                     message: response
@@ -67,6 +93,55 @@ router.post('/sellLicense', function (req, res) {
             })
         }
     })
+
+    
+    ////////////////
+    // query.getChannels(seller).then(channels => {
+    //     let ch = channels.find(function (element) {
+    //         return element === channel;
+    //     })
+    //     console.log(ch)
+    //     return ch;
+    // }).then(ch => {
+    //     if (ch === undefined) {
+    //         invoke.createChannel(channel).then(() => {
+    //             return invoke.joinChannel(channel, seller.url, seller.peer);
+    //         }).then(() => {
+    //             return helper.installChaincode(client, seller.url, seller.peer);
+    //         }).then(() => {
+    //             return invoke.joinChannel(channel, buyer.url, buyer.peer);
+    //         }).then(() => {
+    //             return helper.installChaincode(client, buyer.url, buyer.peer);
+    //         }).then(() => {
+    //             let p1 = {
+    //                 peer: seller.peer,
+    //                 url: seller.url
+    //             };
+
+    //             let p2 = {
+    //                 peer: buyer.peer,
+    //                 url: buyer.url
+    //             };
+
+    //             return helper.instantiateChaincode(client, p1, p2, channel);
+    //         }).then(() => {
+    //             console.log(transaction)
+    //             let stringTransaction = JSON.stringify(transaction);
+    //             console.log(stringTransaction)
+    //             return invoke.newTransaction(seller, buyer, channel, transaction);
+    //         }).then(response => {
+    //             res.status(200).send({
+    //                 message: response
+    //             });
+    //         })
+    //     } else {
+    //         invoke.newTransaction(seller, buyer, channel, transaction).then(response => {
+    //             res.status(200).send({
+    //                 message: response
+    //             });
+    //         })
+    //     }
+    // })
 })
 
 router.get('/getHistory', function (req, res) {
@@ -89,13 +164,14 @@ router.get('/getHistory', function (req, res) {
 router.get('/getHash', function (req, res) {
     helper.hash().then(hash => {
         res.status(200).send({
-            hash : hash
+            hash: hash
         })
     })
 })
 
 router.post('/putMetadata', function (req, res) {
-    let channel = req.body;
+    let channel = req.body.channel;
+    console.log(channel)
     helper.putMetadata(channel).then(msg => {
         res.status(200).send({
             message: msg
