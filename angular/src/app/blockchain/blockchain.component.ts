@@ -27,6 +27,7 @@ export class BlockchainComponent implements OnInit {
     public set License(v: License) {
         this._License = v;
     }
+    channels: string[];
     dropdownList = [];
     dropdownSettings = {};
 
@@ -70,6 +71,8 @@ export class BlockchainComponent implements OnInit {
             allowSearchFilter: false,
             enableCheckAll: false
         };
+
+        this.onUserChange('user1', 'user2');
     }
 
     onItemSelect(item: any) {
@@ -126,6 +129,21 @@ export class BlockchainComponent implements OnInit {
                 console.log(res);
                 this._History = res.queryResponse;
             })
+    }
+
+    onUserChange(sell: string, buy: string) {
+        let seller = this.getUserInfo(sell);
+        let buyer = this.getUserInfo(buy);
+        let sellerChannels = [];
+        let buyerChannels = [];
+        this.fabricService.getChannels(seller).toPromise().then(response => {
+            sellerChannels = response.channels;
+            return this.fabricService.getChannels(buyer).toPromise();
+        }).then(response => {
+            buyerChannels = response.channels;
+        }).then(() => {
+            this.channels = sellerChannels.filter(channel => buyerChannels.includes(channel));
+        })
     }
 
     getUserInfo(userName: string): User {

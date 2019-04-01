@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SellLicenseRequest } from '../interfaces/sellLicenseRequest';
 import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
+import { User } from '../interfaces/user';
 
 @Injectable({
     providedIn: 'root'
@@ -11,6 +12,7 @@ export class FabricService {
 
     private queryUrl = 'http://localhost:3000/api/getHistory';
     private transactionUrl = 'http://localhost:3000/api/sellLicense'
+    private getChannelsUrl = 'http://localhost:3000/api/getChannels';
 
     constructor(private http: HttpClient) { }
 
@@ -29,6 +31,17 @@ export class FabricService {
             headers: headers,
             params: {
                 request: JSON.stringify(request)
+            }
+        });
+    }
+
+    getChannels(user: User): Observable<any> {
+        const headers = new HttpHeaders()
+            .set('Content-Type', 'application/json');
+        return this.http.get(this.getChannelsUrl, {
+            headers: headers,
+            params: {
+                user: JSON.stringify(user)
             }
         });
     }

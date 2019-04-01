@@ -179,6 +179,15 @@ router.post('/putMetadata', function (req, res) {
     })
 })
 
+router.get('/getChannels', function (req, res) {
+    let user = JSON.parse(req.query.user);
+    query.getChannels(user).then(channels => {
+        res.status(200).send({
+            channels: channels
+        })
+    })
+})
+
 app.use('/api', router)
 
 app.listen(3000, function () {

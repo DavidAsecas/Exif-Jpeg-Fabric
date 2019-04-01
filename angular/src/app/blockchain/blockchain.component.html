@@ -1,6 +1,6 @@
 <div style="text-align: center; margin: 50px">
   <span style="float: left;">
-    <select #seller>
+    <select (change)="onUserChange(seller.value, buyer.value)" #seller>
       <option value="user1">User 1</option>
       <option value="user2">User 2</option>
       <option value="user3">User 3</option>
@@ -9,7 +9,7 @@
     </select>
   </span>
   <span style="float: left;">
-    <select #buyer>
+    <select (change)="onUserChange(seller.value, buyer.value)" #buyer>
       <option value="user1">User 1</option>
       <option value="user2">User 2</option>
       <option value="user3">User 3</option>
@@ -19,11 +19,12 @@
   </span>
   <span>
     <select #channel>
-      <option value="user1-stonehenge">User1-stonehenge</option>
+      <option *ngFor="let channel of channels" [value]="channel">{{channel}}</option>
+      <!-- <option value="user1-stonehenge">User1-stonehenge</option>
       <option value="user2-stonehenge">User2-stonehenge</option>
       <option value="user3-stonehenge">User3-stonehenge</option>
       <option value="user4-stonehenge">User4-stonehenge</option>
-      <option value="user5-stonehenge">User5-stonehenge</option>
+      <option value="user5-stonehenge">User5-stonehenge</option> -->
     </select>
   </span>
   <span>
