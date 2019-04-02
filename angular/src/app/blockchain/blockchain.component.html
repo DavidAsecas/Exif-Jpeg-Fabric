@@ -20,11 +20,6 @@
   <span>
     <select #channel>
       <option *ngFor="let channel of channels" [value]="channel">{{channel}}</option>
-      <!-- <option value="user1-stonehenge">User1-stonehenge</option>
-      <option value="user2-stonehenge">User2-stonehenge</option>
-      <option value="user3-stonehenge">User3-stonehenge</option>
-      <option value="user4-stonehenge">User4-stonehenge</option>
-      <option value="user5-stonehenge">User5-stonehenge</option> -->
     </select>
   </span>
   <span>
@@ -35,7 +30,7 @@
   </div>
 </div>
 <div style="text-align: center; margin: 25px;">
-  <button type="button" class="btn btn-primary" (click)='sellLicense(channel.value, seller.value, buyer.value)'
+  <button type="button" class="btn btn-primary" (click)='sellLicense(seller.value, buyer.value)'
     style="margin: 5px">Sell</button>
   <button type="button" class="btn btn-primary" (click)='getHistory(channel.value, seller.value)'
     style="margin: 5px">History</button>
@@ -45,8 +40,53 @@
     (onSelect)="onItemSelect($event)" (onDeSelect)="onItemDeselect($event)" style="width: 100px">
   </ng-multiselect-dropdown>
 </div>
-<code style="text-align: center">
+<div align="center" style="margin: 30px">
+  <table border="1" *ngIf="history">
+      <tr>
+        <th>idImage</th>
+        <th>hashImage</th>
+        <th>newOwner</th>
+        <th>license</th>
+      </tr>
+      <tr *ngFor="let tr of history">
+        <td>{{tr.idImage}}</td>
+        <td>{{tr.hashImage}}</td>
+        <td>{{tr.newOwner}}</td>
+        <td>
+          <table border="1">
+            <tr>
+              <th>adapt</th>
+              <th>diminish</th>
+              <th>embed</th>
+              <th>enhance</th>
+              <th>enlarge</th>
+              <th>issue</th>
+              <th>modify</th>
+              <th>play</th>
+              <th>print</th>
+              <th>reduce</th>
+            </tr>
+            <tr>
+              <td>{{tr.license.adapt}}</td>
+              <td>{{tr.license.diminish}}</td>
+              <td>{{tr.license.embed}}</td>
+              <td>{{tr.license.enhance}}</td>
+              <td>{{tr.license.enlarge}}</td>
+              <td>{{tr.license.issue}}</td>
+              <td>{{tr.license.modify}}</td>
+              <td>{{tr.license.play}}</td>
+              <td>{{tr.license.print}}</td>
+              <td>{{tr.license.reduce}}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+  </table>
+</div>
+
+
+<!-- <code style="text-align: center">
   <pre>
     {{_History | json}}
   </pre>
-</code>
+</code> -->

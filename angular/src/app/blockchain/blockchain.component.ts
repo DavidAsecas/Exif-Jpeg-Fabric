@@ -12,14 +12,6 @@ import { ImageService } from '../services/hash.service';
 })
 export class BlockchainComponent implements OnInit {
 
-    private _History: Transaction;
-    public get History(): Transaction {
-        return this._History;
-    }
-    public set History(v: Transaction) {
-        this._History = v;
-    }
-
     private _License: License;
     public get License(): License {
         return this._License;
@@ -27,6 +19,7 @@ export class BlockchainComponent implements OnInit {
     public set License(v: License) {
         this._License = v;
     }
+    history: any[];
     channels: string[];
     dropdownList = [];
     dropdownSettings = {};
@@ -83,11 +76,12 @@ export class BlockchainComponent implements OnInit {
         this._License[item.item_text] = false;
     }
 
-    sellLicense(channel: string, seller: string, buyer: string) {
+    sellLicense(seller: string, buyer: string) {
         let userSeller = this.getUserInfo(seller);
         let userBuyer = this.getUserInfo(buyer);
         let request = new SellLicenseRequest();
         let hash;
+        let channel = userSeller.userName + '-stonehenge';
         this.imageService.putMetadata(channel).toPromise().then(res => {
             console.log(res.message);
         }).then(() => {
@@ -116,7 +110,6 @@ export class BlockchainComponent implements OnInit {
     }
 
     getHistory(channel: string, querier: string) {
-        this._History = new Transaction();
         let userQuerier = this.getUserInfo(querier);
         let request = new GetHistoryRequest();
         request = {
@@ -126,8 +119,7 @@ export class BlockchainComponent implements OnInit {
         }
         this.fabricService.getHistory(request)
             .subscribe(res => {
-                console.log(res);
-                this._History = res.queryResponse;
+                this.history = res.queryResponse;
             })
     }
 

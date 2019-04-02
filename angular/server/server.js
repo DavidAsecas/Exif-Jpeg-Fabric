@@ -48,16 +48,6 @@ router.post('/sellLicense', function (req, res) {
             }).then(() => {
                 return helper.installChaincode(client, buyer.url, buyer.peer);
             }).then(() => {
-                // let p1 = {
-                //     peer: seller.peer,
-                //     url: seller.url
-                // };
-    
-                // let p2 = {
-                //     peer: buyer.peer,
-                //     url: buyer.url
-                // };
-    
                 return helper.instantiateChaincode(client, matches, channel);
             }).then(() => {
                 console.log(transaction)
@@ -93,55 +83,6 @@ router.post('/sellLicense', function (req, res) {
             })
         }
     })
-
-    
-    ////////////////
-    // query.getChannels(seller).then(channels => {
-    //     let ch = channels.find(function (element) {
-    //         return element === channel;
-    //     })
-    //     console.log(ch)
-    //     return ch;
-    // }).then(ch => {
-    //     if (ch === undefined) {
-    //         invoke.createChannel(channel).then(() => {
-    //             return invoke.joinChannel(channel, seller.url, seller.peer);
-    //         }).then(() => {
-    //             return helper.installChaincode(client, seller.url, seller.peer);
-    //         }).then(() => {
-    //             return invoke.joinChannel(channel, buyer.url, buyer.peer);
-    //         }).then(() => {
-    //             return helper.installChaincode(client, buyer.url, buyer.peer);
-    //         }).then(() => {
-    //             let p1 = {
-    //                 peer: seller.peer,
-    //                 url: seller.url
-    //             };
-
-    //             let p2 = {
-    //                 peer: buyer.peer,
-    //                 url: buyer.url
-    //             };
-
-    //             return helper.instantiateChaincode(client, p1, p2, channel);
-    //         }).then(() => {
-    //             console.log(transaction)
-    //             let stringTransaction = JSON.stringify(transaction);
-    //             console.log(stringTransaction)
-    //             return invoke.newTransaction(seller, buyer, channel, transaction);
-    //         }).then(response => {
-    //             res.status(200).send({
-    //                 message: response
-    //             });
-    //         })
-    //     } else {
-    //         invoke.newTransaction(seller, buyer, channel, transaction).then(response => {
-    //             res.status(200).send({
-    //                 message: response
-    //             });
-    //         })
-    //     }
-    // })
 })
 
 router.get('/getHistory', function (req, res) {
