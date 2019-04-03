@@ -1,7 +1,7 @@
 <div style="text-align: center; margin: 50px">
   <span style="float: left;">
     <select (change)="onUserChange(seller.value, buyer.value)" #seller>
-      <option value="user1">User 1</option>
+      <option selected="selected" value="user1">User 1</option>
       <option value="user2">User 2</option>
       <option value="user3">User 3</option>
       <option value="user4">User 4</option>
@@ -11,14 +11,14 @@
   <span style="float: left;">
     <select (change)="onUserChange(seller.value, buyer.value)" #buyer>
       <option value="user1">User 1</option>
-      <option value="user2">User 2</option>
+      <option selected="selected" value="user2">User 2</option>
       <option value="user3">User 3</option>
       <option value="user4">User 4</option>
       <option value="user5">User 5</option>
     </select>
   </span>
   <span>
-    <select #channel>
+    <select #channel (change)="newCurrentChannel($event)">
       <option *ngFor="let channel of channels" [value]="channel">{{channel}}</option>
     </select>
   </span>
@@ -26,7 +26,7 @@
   </span>
   <div style="float: right">
     Imagen modificada?
-    <input type="checkbox" [(ngModel)]="checkbox" />
+    <input type="checkbox" [(ngModel)]="isNewChannel"/>
   </div>
 </div>
 <div style="text-align: center; margin: 25px;">
@@ -83,10 +83,3 @@
       </tr>
   </table>
 </div>
-
-
-<!-- <code style="text-align: center">
-  <pre>
-    {{_History | json}}
-  </pre>
-</code> -->

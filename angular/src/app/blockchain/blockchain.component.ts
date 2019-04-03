@@ -21,15 +21,14 @@ export class BlockchainComponent implements OnInit {
     }
     history: any[];
     channels: string[];
+    currentChannel : string;
     dropdownList = [];
     dropdownSettings = {};
-
-    checkbox = false;
+    isNewChannel = true;
 
     constructor(private fabricService: FabricService, private imageService: ImageService) { }
 
     ngOnInit(): void {
-
         this._License = {
             adapt: false,
             diminish: false,
@@ -42,7 +41,6 @@ export class BlockchainComponent implements OnInit {
             print: false,
             reduce: false
         }
-
         this.dropdownList = [
             {item_id: 1, item_text: "adapt"},
             {item_id: 2, item_text: "diminish"},
@@ -55,7 +53,6 @@ export class BlockchainComponent implements OnInit {
             {item_id: 9, item_text: "print"},
             {item_id: 10, item_text: "reduce"},
         ]
-
         this.dropdownSettings = {
             singleSelection: false,
             idField: 'item_id',
@@ -64,11 +61,11 @@ export class BlockchainComponent implements OnInit {
             allowSearchFilter: false,
             enableCheckAll: false
         };
-
         this.onUserChange('user1', 'user2');
     }
 
     onItemSelect(item: any) {
+        console.log(this.currentChannel)
         this._License[item.item_text] = true;
     }   
 
@@ -81,7 +78,7 @@ export class BlockchainComponent implements OnInit {
         let userBuyer = this.getUserInfo(buyer);
         let request = new SellLicenseRequest();
         let hash;
-        let channel = userSeller.userName + '-stonehenge';
+        let channel = this.isNewChannel ? userSeller.userName + '-stonehenge' : this.currentChannel;
         this.imageService.putMetadata(channel).toPromise().then(res => {
             console.log(res.message);
         }).then(() => {
@@ -96,6 +93,14 @@ export class BlockchainComponent implements OnInit {
                 newOwner: userBuyer.userName,
                 license: this._License
             }
+            if(this.isNewChannel) {
+                let historyRequest : GetHistoryRequest = {
+                    channel: channel,
+                    imageId: 'stonehenge',
+                    querier: userSeller
+                }
+                return this.fabricService.getHistory(historyRequest).toPromise();
+            }
             request = {
                 seller: userSeller,
                 buyer: userBuyer,
@@ -106,7 +111,7 @@ export class BlockchainComponent implements OnInit {
                 .subscribe(res => {
                     console.log(res.message);
                 })
-        })
+        }).then()
     }
 
     getHistory(channel: string, querier: string) {
@@ -134,8 +139,14 @@ export class BlockchainComponent implements OnInit {
         }).then(response => {
             buyerChannels = response.channels;
         }).then(() => {
-            this.channels = sellerChannels.filter(channel => buyerChannels.includes(channel));
+            this.channels = sellerChannels;
+            this.currentChannel = this.channels ? this.channels[0] : undefined;
         })
+    }
+
+    newCurrentChannel(event) {
+        this.currentChannel = event.target.value;
+        console.log(this.currentChannel)
     }
 
     getUserInfo(userName: string): User {

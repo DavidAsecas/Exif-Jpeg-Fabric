@@ -39,6 +39,7 @@ router.post('/sellLicense', function (req, res) {
     Promise.all(promises).then(m => {
         let matches = m.filter(element => element !== undefined);
         if (matches.length == 2) {
+            console.log(channel)
             invoke.createChannel(channel).then(() => {
                 return invoke.joinChannel(channel, seller.url, seller.peer);
             }).then(() => {
