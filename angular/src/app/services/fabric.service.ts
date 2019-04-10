@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { SellLicenseRequest } from '../interfaces/sellLicenseRequest';
 import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
 import { User } from '../interfaces/user';
+import { InheritHistoryRequest } from '../interfaces/inheritHistory';
 
 @Injectable({
     providedIn: 'root'
@@ -13,6 +14,7 @@ export class FabricService {
     private queryUrl = 'http://localhost:3000/api/getHistory';
     private transactionUrl = 'http://localhost:3000/api/sellLicense'
     private getChannelsUrl = 'http://localhost:3000/api/getChannels';
+    private inheritHistoryUrl = 'http://localhost:3000/api/inheritHistory';
 
     constructor(private http: HttpClient) { }
 
@@ -24,7 +26,7 @@ export class FabricService {
         });
     }
 
-    getHistory(request: GetHistoryRequest): Observable<any>{
+    getHistory(request: GetHistoryRequest): Observable<any> {
         const headers = new HttpHeaders()
             .set('Content-Type', 'application/json');
         return this.http.get(this.queryUrl, {
@@ -43,6 +45,14 @@ export class FabricService {
             params: {
                 user: JSON.stringify(user)
             }
+        });
+    }
+
+    inheritHistory(request: InheritHistoryRequest): Observable<any> {
+        const headers = new HttpHeaders()
+            .set('Content-Type', 'application/json');
+        return this.http.post(this.inheritHistoryUrl, JSON.stringify(request), {
+            headers: headers
         });
     }
 }

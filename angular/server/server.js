@@ -93,14 +93,13 @@ router.get('/getHistory', function (req, res) {
     let imagen = request.imageId;
 
     console.log(request)
-    query.getImageHistory(channel, querier, imagen)
-        .then(queryResponse => {
-            console.log(queryResponse.toString())
-            let response = JSON.parse("[" + queryResponse.toString() + "]");
-            res.status(200).send({
-                queryResponse: response
-            })
+    query.getImageHistory(channel, querier, imagen).then(queryResponse => {
+        console.log(queryResponse.toString())
+        let response = JSON.parse("[" + queryResponse.toString() + "]");
+        res.status(200).send({
+            queryResponse: response
         })
+    })
 })
 
 router.get('/getHash', function (req, res) {
@@ -128,6 +127,42 @@ router.get('/getChannels', function (req, res) {
             channels: channels
         })
     })
+})
+
+router.post('/inheritHistory', function (req, res) {
+    let parent = req.body.parent;
+    let child = req.body.child;
+    let seller = req.body.seller;
+    let image = req.query.image;
+    let history;
+    console.log(req.body)
+    if (parent !== undefined) {
+        query.getImageHistory(parent, seller, image).then(queryResponse => {
+            history = JSON.parse("[" + queryResponse.toString() + "]");
+            console.log(history);
+            return invoke.createChannel(child);
+            }).then(() => {
+                return invoke.joinChannel(child, seller.url, seller.peer);
+            }).then(() => {
+                return helper.installChaincode(client, seller.url, seller.peer);
+            }).then(() => {
+                return invoke.joinChannel(child, buyer.url, buyer.peer);
+            }).then(() => {
+                return helper.installChaincode(client, buyer.url, buyer.peer);
+            }).then(() => {
+                return helper.instantiateChaincode(client, matches, child);
+            }).then(() => {
+                return invoke.newTransaction(seller, buyer, child, history);
+            }).then(response => {
+                res.status(200).send({
+                    message: response
+                });
+            })
+    } else {
+        res.status(200).send({
+            message: 'origin'
+        });
+    }
 })
 
 app.use('/api', router)

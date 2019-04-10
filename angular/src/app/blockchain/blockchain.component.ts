@@ -5,6 +5,9 @@ import { User } from '../interfaces/user';
 import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
 import { Transaction, License } from '../interfaces/transaction';
 import { ImageService } from '../services/hash.service';
+import { InheritHistoryRequest } from '../interfaces/inheritHistory';
+import { JsonPipe } from '@angular/common';
+import { reject } from 'q';
 
 @Component({
     selector: 'pm-block',
@@ -65,7 +68,6 @@ export class BlockchainComponent implements OnInit {
     }
 
     onItemSelect(item: any) {
-        console.log(this.currentChannel)
         this._License[item.item_text] = true;
     }   
 
@@ -87,31 +89,38 @@ export class BlockchainComponent implements OnInit {
             hash = res.hash;
             console.log(hash)
         }).then(() => {
+            if(this.isNewChannel) {
+                let request: InheritHistoryRequest = {
+                    buyer: userBuyer,
+                    seller: userSeller,
+                    child: channel,
+                    parent: this.currentChannel,
+                    image: 'stonehenge',
+                };
+                return this.fabricService.inheritHistory(request).toPromise();
+            } else {
+                return new Promise((resolve, reject) => resolve());
+            }
+        }).then(res => {
+            this.history = res.queryResponse;
+        }).then(() => {
             let transaction: Transaction = {
                 idImage: 'stonehenge',
                 hashImage: hash,
                 newOwner: userBuyer.userName,
                 license: this._License
-            }
-            if(this.isNewChannel) {
-                let historyRequest : GetHistoryRequest = {
-                    channel: channel,
-                    imageId: 'stonehenge',
-                    querier: userSeller
-                }
-                return this.fabricService.getHistory(historyRequest).toPromise();
-            }
+            };
             request = {
                 seller: userSeller,
                 buyer: userBuyer,
                 channel: channel,
                 transaction: JSON.stringify(transaction)
-            }
+            };
             this.fabricService.sellLicense(request)
                 .subscribe(res => {
                     console.log(res.message);
                 })
-        }).then()
+        })
     }
 
     getHistory(channel: string, querier: string) {
