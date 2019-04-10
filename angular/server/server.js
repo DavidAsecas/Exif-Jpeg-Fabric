@@ -133,9 +133,9 @@ router.post('/inheritHistory', function (req, res) {
     let parent = req.body.parent;
     let child = req.body.child;
     let seller = req.body.seller;
-    let image = req.query.image;
+    let buyer = req.body.buyer;
+    let image = req.body.image;
     let history;
-    console.log(req.body)
     if (parent !== undefined) {
         query.getImageHistory(parent, seller, image).then(queryResponse => {
             history = JSON.parse("[" + queryResponse.toString() + "]");
@@ -150,7 +150,7 @@ router.post('/inheritHistory', function (req, res) {
             }).then(() => {
                 return helper.installChaincode(client, buyer.url, buyer.peer);
             }).then(() => {
-                return helper.instantiateChaincode(client, matches, child);
+                return helper.instantiateChaincode(client, [seller, buyer], child);
             }).then(() => {
                 return invoke.newTransaction(seller, buyer, child, history);
             }).then(response => {

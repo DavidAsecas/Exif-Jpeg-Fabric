@@ -22,7 +22,7 @@ module.exports.getImageHistory = function (ch, querier, imagen) {
 				fcn: 'GetImageHistory',
 				args: [imagen]
 			};
-
+			console.log(request)
 			// send the query proposal to the peer
 			return channel.queryByChaincode(request);
 		}).then((query_responses) => {

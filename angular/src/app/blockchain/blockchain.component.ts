@@ -24,7 +24,7 @@ export class BlockchainComponent implements OnInit {
     }
     history: any[];
     channels: string[];
-    currentChannel : string;
+    currentChannel: string;
     dropdownList = [];
     dropdownSettings = {};
     isNewChannel = true;
@@ -45,16 +45,16 @@ export class BlockchainComponent implements OnInit {
             reduce: false
         }
         this.dropdownList = [
-            {item_id: 1, item_text: "adapt"},
-            {item_id: 2, item_text: "diminish"},
-            {item_id: 3, item_text: "embed"},
-            {item_id: 4, item_text: "enhance"},
-            {item_id: 5, item_text: "enlarge"},
-            {item_id: 6, item_text: "issue"},
-            {item_id: 7, item_text: "modify"},
-            {item_id: 8, item_text: "play"},
-            {item_id: 9, item_text: "print"},
-            {item_id: 10, item_text: "reduce"},
+            { item_id: 1, item_text: "adapt" },
+            { item_id: 2, item_text: "diminish" },
+            { item_id: 3, item_text: "embed" },
+            { item_id: 4, item_text: "enhance" },
+            { item_id: 5, item_text: "enlarge" },
+            { item_id: 6, item_text: "issue" },
+            { item_id: 7, item_text: "modify" },
+            { item_id: 8, item_text: "play" },
+            { item_id: 9, item_text: "print" },
+            { item_id: 10, item_text: "reduce" },
         ]
         this.dropdownSettings = {
             singleSelection: false,
@@ -69,7 +69,7 @@ export class BlockchainComponent implements OnInit {
 
     onItemSelect(item: any) {
         this._License[item.item_text] = true;
-    }   
+    }
 
     onItemDeselect(item: any) {
         this._License[item.item_text] = false;
@@ -89,7 +89,8 @@ export class BlockchainComponent implements OnInit {
             hash = res.hash;
             console.log(hash)
         }).then(() => {
-            if(this.isNewChannel) {
+            console.log(this.isNewChannel)
+            if (this.isNewChannel) {
                 let request: InheritHistoryRequest = {
                     buyer: userBuyer,
                     seller: userSeller,
@@ -97,9 +98,15 @@ export class BlockchainComponent implements OnInit {
                     parent: this.currentChannel,
                     image: 'stonehenge',
                 };
+                console.log(request)
                 return this.fabricService.inheritHistory(request).toPromise();
             } else {
-                return new Promise((resolve, reject) => resolve());
+                return new Promise((resolve, reject) => {
+                    let res = {
+                        queryResponse: ''
+                    }
+                    resolve(res);
+                });
             }
         }).then(res => {
             this.history = res.queryResponse;
