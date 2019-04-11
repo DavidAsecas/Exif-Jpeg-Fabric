@@ -40,13 +40,11 @@ module.exports.joinChannel = function (channelID, peerUrl, targetPeerId) {
 			}).then(proposalResponse => {
 				if (proposalResponse && proposalResponse[0].response.status == 200) {
 					let status = proposalResponse[0].response.status;
-					console.log(status);
 					resolve(status);
 				} else {
 					reject(status);
 				}
 			}).catch(err => {
-				console.log(err);
 				reject(err);
 			})
 	})
@@ -75,8 +73,6 @@ module.exports.createChannel = function (channelID) {
 				txId: txId
 			};
 			fabric_client.createChannel(channelRequest).then(response => {
-				console.log(response.status);
-				console.log(response.info);
 				if (response.status == 'SUCCESS')
 					resolve(response.status);
 				else {
@@ -109,14 +105,12 @@ module.exports.newTransaction = function (seller, buyer, ch, transaction) {
 		channel.addOrderer(order);
 
 		let store_path = path.join(__dirname, '..', '..', 'crypto-config/peerOrganizations/app.jpeg.com/ca');
-		console.log('Store path:' + store_path);
 		var tx_id = null;
 
 		// create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
 		helper.loadUser(fabric_client, seller.userName).then(user_from_store => {
 			// get a transaction id object based on the current user assigned to fabric client
 			tx_id = fabric_client.newTransactionID();
-			console.log("Assigning transaction_id: ", tx_id._transaction_id);
 
 			// let idImagen = transaction.idImagen;
 			// let hashImagen = transaction.hashImagen;
@@ -126,17 +120,15 @@ module.exports.newTransaction = function (seller, buyer, ch, transaction) {
 				targets: [sellerPeer, buyerPeer],
 				chaincodeId: 'jpeg',
 				fcn: 'NewTransaction',
-				args: [transaction],
+				args: [transaction, 'stonehenge'],
 				chainId: ch,
 				txId: tx_id
 			};
-
+			console.log(request)
 			// send the transaction proposal to the peers
 			return channel.sendTransactionProposal(request);
 		}).then((results) => {
 			var proposalResponses = results[0];
-			console.log(proposalResponses[0].response)
-			console.log(proposalResponses[1].response)
 			var proposal = results[1];
 			let isProposalGood = false;
 			if (proposalResponses && proposalResponses[0].response &&

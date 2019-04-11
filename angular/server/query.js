@@ -14,7 +14,6 @@ module.exports.getImageHistory = function (ch, querier, imagen) {
 		});
 		channel.addPeer(peer);
 		let store_path = path.join(__dirname, '..', '..', 'crypto-config/peerOrganizations/app.jpeg.com/ca');
-		console.log('Store path:' + store_path);
 
 		return helper.loadUser(fabric_client, querier.userName).then((user_from_store) => {
 			let request = {
@@ -22,11 +21,9 @@ module.exports.getImageHistory = function (ch, querier, imagen) {
 				fcn: 'GetImageHistory',
 				args: [imagen]
 			};
-			console.log(request)
 			// send the query proposal to the peer
 			return channel.queryByChaincode(request);
 		}).then((query_responses) => {
-			console.log(query_responses);
 			console.log("Query has completed, checking results");
 			// query_responses could have more than one  results if there multiple peers were used as targets
 			if (query_responses && query_responses.length == 1) {

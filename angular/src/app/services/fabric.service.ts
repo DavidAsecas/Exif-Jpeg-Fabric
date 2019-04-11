@@ -23,7 +23,7 @@ export class FabricService {
             .set('Content-Type', 'application/json');
         return this.http.post(this.transactionUrl, JSON.stringify(request), {
             headers: headers
-        });
+        })
     }
 
     getHistory(request: GetHistoryRequest): Observable<any> {

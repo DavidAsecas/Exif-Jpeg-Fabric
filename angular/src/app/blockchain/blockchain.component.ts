@@ -82,14 +82,11 @@ export class BlockchainComponent implements OnInit {
         let hash;
         let channel = this.isNewChannel ? userSeller.userName + '-stonehenge' : this.currentChannel;
         this.imageService.putMetadata(channel).toPromise().then(res => {
-            console.log(res.message);
         }).then(() => {
             return this.imageService.getHash().toPromise();
         }).then(res => {
             hash = res.hash;
-            console.log(hash)
         }).then(() => {
-            console.log(this.isNewChannel)
             if (this.isNewChannel) {
                 let request: InheritHistoryRequest = {
                     buyer: userBuyer,
@@ -98,7 +95,6 @@ export class BlockchainComponent implements OnInit {
                     parent: this.currentChannel,
                     image: 'stonehenge',
                 };
-                console.log(request)
                 return this.fabricService.inheritHistory(request).toPromise();
             } else {
                 return new Promise((resolve, reject) => {
@@ -162,7 +158,6 @@ export class BlockchainComponent implements OnInit {
 
     newCurrentChannel(event) {
         this.currentChannel = event.target.value;
-        console.log(this.currentChannel)
     }
 
     getUserInfo(userName: string): User {

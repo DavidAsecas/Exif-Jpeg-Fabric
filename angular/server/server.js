@@ -7,15 +7,17 @@ const helper = require('./helper');
 let Fabric_Client = require('fabric-client');
 let client = new Fabric_Client();
 let cors = require('cors');
+let timeout = require('connect-timeout');
 
 app.use(cors())
-app.options('*', cors())
+// app.options('*', cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(timeout('100s'));
 let router = express.Router();
 
 router.post('/sellLicense', function (req, res) {
+    console.log('sellLicense')
     let seller = req.body.seller;
     let buyer = req.body.buyer;
     let channel = req.body.channel;
@@ -28,18 +30,17 @@ router.post('/sellLicense', function (req, res) {
                 let ch = chs.find(function (element) {
                     return element === channel;
                 });
-                if(ch === undefined) {
+                if (ch === undefined) {
                     resolve(user);
                 }
                 resolve();
             });
-        })        
+        })
         promises.push(promise);
     });
     Promise.all(promises).then(m => {
         let matches = m.filter(element => element !== undefined);
         if (matches.length == 2) {
-            console.log(channel)
             invoke.createChannel(channel).then(() => {
                 return invoke.joinChannel(channel, seller.url, seller.peer);
             }).then(() => {
@@ -51,9 +52,7 @@ router.post('/sellLicense', function (req, res) {
             }).then(() => {
                 return helper.instantiateChaincode(client, matches, channel);
             }).then(() => {
-                console.log(transaction)
                 let stringTransaction = JSON.stringify(transaction);
-                console.log(stringTransaction)
                 return invoke.newTransaction(seller, buyer, channel, transaction);
             }).then(response => {
                 res.status(200).send({
@@ -67,9 +66,7 @@ router.post('/sellLicense', function (req, res) {
             }).then(() => {
                 return helper.instantiateChaincode(client, matches, channel);
             }).then(() => {
-                console.log(transaction)
                 let stringTransaction = JSON.stringify(transaction);
-                console.log(stringTransaction)
                 return invoke.newTransaction(seller, buyer, channel, transaction);
             }).then(response => {
                 res.status(200).send({
@@ -92,12 +89,22 @@ router.get('/getHistory', function (req, res) {
     let querier = request.querier;
     let imagen = request.imageId;
 
-    console.log(request)
     query.getImageHistory(channel, querier, imagen).then(queryResponse => {
-        console.log(queryResponse.toString())
         let response = JSON.parse("[" + queryResponse.toString() + "]");
+        let history = [];
+        if (Array.isArray(response[0])) {
+            let inherited = response[0];
+            let transaction = response.pop();
+            inherited.forEach(element => {
+                history.push(element);
+            })
+            history.push(transaction);
+        } else {
+            history = response;
+        }
+        console.log(history)
         res.status(200).send({
-            queryResponse: response
+            queryResponse: history
         })
     })
 })
@@ -112,7 +119,6 @@ router.get('/getHash', function (req, res) {
 
 router.post('/putMetadata', function (req, res) {
     let channel = req.body.channel;
-    console.log(channel)
     helper.putMetadata(channel).then(msg => {
         res.status(200).send({
             message: msg
@@ -130,34 +136,38 @@ router.get('/getChannels', function (req, res) {
 })
 
 router.post('/inheritHistory', function (req, res) {
+    console.log('inheritHistory')
     let parent = req.body.parent;
     let child = req.body.child;
     let seller = req.body.seller;
     let buyer = req.body.buyer;
     let image = req.body.image;
     let history;
+    let stringHistory;
     if (parent !== undefined) {
         query.getImageHistory(parent, seller, image).then(queryResponse => {
             history = JSON.parse("[" + queryResponse.toString() + "]");
-            console.log(history);
+            stringHistory = JSON.stringify(history);
             return invoke.createChannel(child);
-            }).then(() => {
-                return invoke.joinChannel(child, seller.url, seller.peer);
-            }).then(() => {
-                return helper.installChaincode(client, seller.url, seller.peer);
-            }).then(() => {
-                return invoke.joinChannel(child, buyer.url, buyer.peer);
-            }).then(() => {
-                return helper.installChaincode(client, buyer.url, buyer.peer);
-            }).then(() => {
-                return helper.instantiateChaincode(client, [seller, buyer], child);
-            }).then(() => {
-                return invoke.newTransaction(seller, buyer, child, history);
-            }).then(response => {
-                res.status(200).send({
-                    message: response
-                });
-            })
+        }).then(() => {
+            return invoke.joinChannel(child, seller.url, seller.peer);
+        }).then(() => {
+            return helper.installChaincode(client, seller.url, seller.peer);
+        }).then(() => {
+            return invoke.joinChannel(child, buyer.url, buyer.peer);
+        }).then(() => {
+            return helper.installChaincode(client, buyer.url, buyer.peer);
+        }).then(() => {
+            return helper.instantiateChaincode(client, [seller, buyer], child);
+        }).then(() => {
+            console.log('newTransaction')
+            console.log(stringHistory)
+            return invoke.newTransaction(seller, buyer, child, stringHistory);
+        }).then(response => {
+            res.status(200).send({
+                message: response
+            });
+        })
     } else {
         res.status(200).send({
             message: 'origin'

@@ -36,9 +36,7 @@ const Chaincode = class {
     async NewTransaction(stub, args) {
         console.info(args);
         let stringTransaction = args[0];
-        let transaction = JSON.parse(stringTransaction);
-        let idImage = transaction.idImage;
-        stringTransaction = JSON.stringify(transaction);
+        let idImage = args[1];
         console.log(stringTransaction);
         try {
             return await stub.putState(idImage, Buffer.from(stringTransaction));
