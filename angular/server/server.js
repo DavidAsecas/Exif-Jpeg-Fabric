@@ -7,13 +7,11 @@ const helper = require('./helper');
 let Fabric_Client = require('fabric-client');
 let client = new Fabric_Client();
 let cors = require('cors');
-let timeout = require('connect-timeout');
 
+app.options('*', cors())
 app.use(cors())
-// app.options('*', cors())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(timeout('100s'));
 let router = express.Router();
 
 router.post('/sellLicense', function (req, res) {
@@ -88,20 +86,9 @@ router.get('/getHistory', function (req, res) {
     let channel = request.channel;
     let querier = request.querier;
     let imagen = request.imageId;
-
     query.getImageHistory(channel, querier, imagen).then(queryResponse => {
         let response = JSON.parse("[" + queryResponse.toString() + "]");
-        let history = [];
-        if (Array.isArray(response[0])) {
-            let inherited = response[0];
-            let transaction = response.pop();
-            inherited.forEach(element => {
-                history.push(element);
-            })
-            history.push(transaction);
-        } else {
-            history = response;
-        }
+        let history = helper.flatArray(response);
         console.log(history)
         res.status(200).send({
             queryResponse: history

@@ -172,7 +172,7 @@ module.exports.newTransaction = function (seller, buyer, ch, transaction) {
 						event_hub.unregisterTxEvent(transaction_id_string);
 						event_hub.disconnect();
 						resolve({ event_status: 'TIMEOUT' }); //we could use reject(new Error('Trnasaction did not complete within 30 seconds'));
-					}, 40000);
+					}, 120000);
 					event_hub.registerTxEvent(transaction_id_string, (tx, code) => {
 						// this is the callback for transaction event status
 						// first some clean up of event listener
