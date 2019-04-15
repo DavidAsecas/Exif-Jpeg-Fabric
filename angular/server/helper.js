@@ -140,7 +140,6 @@ module.exports.instantiateChaincode = function (fabric_client, users, ch) {
 				// is required bacause the event registration must be signed
 				peers.forEach(function(peer) {
 					let event_hub = channel.newChannelEventHub(peer);
-					// let event_hub2 = channel.newChannelEventHub(p2);
 	
 					// using resolve the promise so that result status may be processed
 					// under the then clause rather than having the catch clause process

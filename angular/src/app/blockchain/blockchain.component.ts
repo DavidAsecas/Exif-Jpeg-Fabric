@@ -5,9 +5,7 @@ import { User } from '../interfaces/user';
 import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
 import { Transaction, License } from '../interfaces/transaction';
 import { ImageService } from '../services/hash.service';
-import { InheritHistoryRequest } from '../interfaces/inheritHistory';
-import { JsonPipe } from '@angular/common';
-import { reject } from 'q';
+import { InheritHistoryRequest } from '../interfaces/inheritHistoryRequest';
 
 @Component({
     selector: 'pm-block',

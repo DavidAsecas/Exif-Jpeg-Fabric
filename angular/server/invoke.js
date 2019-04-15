@@ -112,10 +112,6 @@ module.exports.newTransaction = function (seller, buyer, ch, transaction) {
 			// get a transaction id object based on the current user assigned to fabric client
 			tx_id = fabric_client.newTransactionID();
 
-			// let idImagen = transaction.idImagen;
-			// let hashImagen = transaction.hashImagen;
-			// let newOwner = transaction.newOwner;
-			// let license = transaction.license;
 			var request = {
 				targets: [sellerPeer, buyerPeer],
 				chaincodeId: 'jpeg',

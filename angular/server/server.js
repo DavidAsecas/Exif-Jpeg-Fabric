@@ -50,7 +50,6 @@ router.post('/sellLicense', function (req, res) {
             }).then(() => {
                 return helper.instantiateChaincode(client, matches, channel);
             }).then(() => {
-                let stringTransaction = JSON.stringify(transaction);
                 return invoke.newTransaction(seller, buyer, channel, transaction);
             }).then(response => {
                 res.status(200).send({
@@ -64,7 +63,6 @@ router.post('/sellLicense', function (req, res) {
             }).then(() => {
                 return helper.instantiateChaincode(client, matches, channel);
             }).then(() => {
-                let stringTransaction = JSON.stringify(transaction);
                 return invoke.newTransaction(seller, buyer, channel, transaction);
             }).then(response => {
                 res.status(200).send({

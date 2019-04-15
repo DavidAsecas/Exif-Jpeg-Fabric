@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { SellLicenseRequest } from '../interfaces/sellLicenseRequest';
 import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
 import { User } from '../interfaces/user';
-import { InheritHistoryRequest } from '../interfaces/inheritHistory';
+import { InheritHistoryRequest } from '../interfaces/inheritHistoryRequest';
 
 @Injectable({
     providedIn: 'root'
