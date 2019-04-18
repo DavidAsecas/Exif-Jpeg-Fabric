@@ -79,12 +79,6 @@ module.exports.instantiateChaincode = function (fabric_client, users, ch) {
 			channel.addPeer(peer);
 		})
 		console.log(peers)
-		// let p2 = fabric_client.newPeer(peer1.url, {
-		// 	pem: Buffer.from(serverCert).toString(),
-		// 	"ssl-target-name-override": peer1.peer + '.app.jpeg.com'
-	
-		// });
-		// channel.addPeer(p2);
 		let order = fabric_client.newOrderer('grpcs://localhost:7050', {
 			pem: Buffer.from(orderCert).toString(),
 			'ssl-target-name-override': 'orderer.jpeg.com'

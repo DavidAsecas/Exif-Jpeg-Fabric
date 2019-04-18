@@ -56,8 +56,6 @@ const Chaincode = class {
                 console.log(item)
                 let buffer = item.value.value.toString('utf8');
                 console.log(buffer)
-                // let stringTransaction = Buffer.from(buffer).toString();
-                // let transaction = JSON.parse(stringTransaction);
                 history.push(buffer);
                 if (item.done == true)
                     done = true;
