@@ -4,12 +4,14 @@ import { SellLicenseRequest } from '../interfaces/sellLicenseRequest';
 import { User } from '../interfaces/user';
 import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
 import { Transaction, License } from '../interfaces/transaction';
-import { ImageService } from '../services/hash.service';
+import { HashService } from '../services/hash.service';
 import { InheritHistoryRequest } from '../interfaces/inheritHistoryRequest';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
     selector: 'pm-block',
-    templateUrl: './blockchain.component.html'
+    templateUrl: './blockchain.component.html',
+    styleUrls: ['./blockchain.component.css']
 })
 export class BlockchainComponent implements OnInit {
 
@@ -20,14 +22,14 @@ export class BlockchainComponent implements OnInit {
     public set License(v: License) {
         this._License = v;
     }
-    history: any[];
+    dropdownList = ['adapt', 'diminish', 'embed', 'enhance', 'enlarge', 'issue', 'modify', 'play', 'print', 'reduce'];
+    history: Transaction[];
     channels: string[];
     currentChannel: string;
-    dropdownList = [];
-    dropdownSettings = {};
     isNewChannel = true;
+    loading = false;
 
-    constructor(private fabricService: FabricService, private imageService: ImageService) { }
+    constructor(private fabricService: FabricService, private hashService: HashService, public snackBar: MatSnackBar) { }
 
     ngOnInit(): void {
         this._License = {
@@ -42,50 +44,47 @@ export class BlockchainComponent implements OnInit {
             print: false,
             reduce: false
         }
-        this.dropdownList = [
-            { item_id: 1, item_text: "adapt" },
-            { item_id: 2, item_text: "diminish" },
-            { item_id: 3, item_text: "embed" },
-            { item_id: 4, item_text: "enhance" },
-            { item_id: 5, item_text: "enlarge" },
-            { item_id: 6, item_text: "issue" },
-            { item_id: 7, item_text: "modify" },
-            { item_id: 8, item_text: "play" },
-            { item_id: 9, item_text: "print" },
-            { item_id: 10, item_text: "reduce" },
-        ]
-        this.dropdownSettings = {
-            singleSelection: false,
-            idField: 'item_id',
-            textField: 'item_text',
-            itemsShowLimit: 5,
-            allowSearchFilter: false,
-            enableCheckAll: false
-        };
-        this.onUserChange('user1');
     }
 
-    onItemSelect(item: any) {
-        this._License[item.item_text] = true;
+    openSnackBar() {
+        this.snackBar.open("Transaction registered!", null ,{
+            duration: 2000
+        })
     }
 
-    onItemDeselect(item: any) {
-        this._License[item.item_text] = false;
+    onItemChange(source: any) {
+        this._License = {
+            adapt: false,
+            diminish: false,
+            embed: false,
+            enhance: false,
+            enlarge: false,
+            issue: false,
+            modify: false,
+            play: false,
+            print: false,
+            reduce: false
+        }
+        for (let i = 0; i < source.value.length; i++) {
+            this._License[source.value[i]] = true;
+        }
     }
 
     sellLicense(seller: string, buyer: string) {
+        this.loading = true;
         let userSeller = this.getUserInfo(seller);
         let userBuyer = this.getUserInfo(buyer);
         let request = new SellLicenseRequest();
         let hash;
         let channel = this.isNewChannel ? userSeller.userName + '-stonehenge' : this.currentChannel;
-        this.imageService.putMetadata(channel).toPromise().then(res => {
-        }).then(() => {
-            return this.imageService.getHash().toPromise();
+        console.log('test')
+        this.hashService.putMetadata(channel).toPromise().then(() => {
+            return this.hashService.getHash().toPromise();
         }).then(res => {
             hash = res.hash;
         }).then(() => {
             if (this.isNewChannel) {
+                console.log('isnewChannel')
                 let request: InheritHistoryRequest = {
                     buyer: userBuyer,
                     seller: userSeller,
@@ -96,6 +95,7 @@ export class BlockchainComponent implements OnInit {
                 return this.fabricService.inheritHistory(request).toPromise();
             } else {
                 return new Promise((resolve, reject) => {
+                    console.log('isNotNewChannel')
                     let res = {
                         queryResponse: ''
                     }
@@ -103,6 +103,7 @@ export class BlockchainComponent implements OnInit {
                 });
             }
         }).then(res => {
+            console.log(res)
             this.history = res.queryResponse;
         }).then(() => {
             let transaction: Transaction = {
@@ -117,13 +118,15 @@ export class BlockchainComponent implements OnInit {
                 channel: channel,
                 transaction: JSON.stringify(transaction)
             };
+            console.log(request)
             this.fabricService.sellLicense(request)
                 .subscribe(res => {
                     this.fabricService.getChannels(userSeller).toPromise().then(response => {
                         this.channels = response.channels;
                         this.currentChannel = this.channels ? this.channels[0] : undefined;
+                        this.loading = false;
+                        this.openSnackBar();
                     })
-                    console.log(res.message);
                 })
         })
     }
@@ -142,7 +145,8 @@ export class BlockchainComponent implements OnInit {
             })
     }
 
-    onUserChange(sell: string) {
+    selected(sell: string) {
+        console.log(this.isNewChannel)
         let seller = this.getUserInfo(sell);
         this.fabricService.getChannels(seller).toPromise().then(response => {
             this.channels = response.channels;
@@ -151,7 +155,7 @@ export class BlockchainComponent implements OnInit {
     }
 
     newCurrentChannel(event) {
-        this.currentChannel = event.target.value;
+        this.currentChannel = event.value;
     }
 
     getUserInfo(userName: string): User {

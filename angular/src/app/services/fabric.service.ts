@@ -5,6 +5,7 @@ import { SellLicenseRequest } from '../interfaces/sellLicenseRequest';
 import { GetHistoryRequest } from '../interfaces/getHistoryRequest';
 import { User } from '../interfaces/user';
 import { InheritHistoryRequest } from '../interfaces/inheritHistoryRequest';
+import { timeout } from "rxjs/operators"
 
 @Injectable({
     providedIn: 'root'
@@ -23,7 +24,7 @@ export class FabricService {
             .set('Content-Type', 'application/json');
         return this.http.post(this.transactionUrl, JSON.stringify(request), {
             headers: headers
-        })
+        }).pipe(timeout(60000))
     }
 
     getHistory(request: GetHistoryRequest): Observable<any> {
@@ -53,6 +54,6 @@ export class FabricService {
             .set('Content-Type', 'application/json');
         return this.http.post(this.inheritHistoryUrl, JSON.stringify(request), {
             headers: headers
-        });
+        }).pipe(timeout(60000));
     }
 }

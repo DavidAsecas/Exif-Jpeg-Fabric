@@ -38,6 +38,7 @@ router.post('/sellLicense', function (req, res) {
     });
     Promise.all(promises).then(m => {
         let matches = m.filter(element => element !== undefined);
+        console.log(matches.length)
         if (matches.length == 2) {
             invoke.createChannel(channel).then(() => {
                 return invoke.joinChannel(channel, seller.url, seller.peer);
@@ -61,6 +62,7 @@ router.post('/sellLicense', function (req, res) {
             invoke.joinChannel(channel, user.url, user.peer).then(() => {
                 return helper.installChaincode(client, user.url, user.peer);
             }).then(() => {
+                console.log(client, matches, channel)
                 return helper.instantiateChaincode(client, matches, channel);
             }).then(() => {
                 return invoke.newTransaction(seller, buyer, channel, transaction);

@@ -6,12 +6,12 @@ import { Observable } from "rxjs";
     providedIn: 'root'
 })
 
-export class ImageService {
+export class HashService {
 
     private getHashUrl = 'http://localhost:3000/api/getHash';
     private putMetadataUrl = 'http://localhost:3000/api/putMetadata';
 
-    constructor(private http: HttpClient){}
+    constructor(private http: HttpClient) { }
 
     getHash(): Observable<any> {
         const headers = new HttpHeaders()
@@ -22,11 +22,11 @@ export class ImageService {
     }
 
     putMetadata(channel: string): Observable<any> {
-        let body = {channel: channel}
+        let body = { channel: channel }
         const headers = new HttpHeaders()
             .set('Content-Type', 'application/json');
         return this.http.post(this.putMetadataUrl, body, {
             headers: headers
-        });
+        })
     }
 }

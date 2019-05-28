@@ -1,94 +1,59 @@
-<div style="text-align: center; margin: 50px">
-  <span style="float: left;">
-    <div >
-      Seller
-    </div>
-    <select (change)="onUserChange(seller.value)" #seller>
-      <option selected="selected" value="user1">User 1</option>
-      <option value="user2">User 2</option>
-      <option value="user3">User 3</option>
-      <option value="user4">User 4</option>
-      <option value="user5">User 5</option>
-    </select>
-  </span>
-  <span style="float: left;">
-    <div >
-      Buyer
-    </div>
-    <select (change)="onUserChange(seller.value)" #buyer>
-      <option value="user1">User 1</option>
-      <option selected="selected" value="user2">User 2</option>
-      <option value="user3">User 3</option>
-      <option value="user4">User 4</option>
-      <option value="user5">User 5</option>
-    </select>
-  </span>
-  <span style="text-align: center; display: inline-block;">
-    <div>
-      Channel
-    </div>
-    <select #channel (change)="newCurrentChannel($event)">
-      <option *ngFor="let channel of channels" [value]="channel">{{channel}}</option>
-    </select>
-  </span>
-  <span>
-  </span>
-  <div style="float: right">
-    Imagen modificada?
-    <input type="checkbox" [(ngModel)]="isNewChannel"/>
+<div class="row">
+  <div class="column" style="width: 15%">
+    <mat-form-field>
+      <mat-label>Seller</mat-label>
+      <mat-select (selectionChange)="selected($event.value)" #seller>
+        <mat-option value="user1">User 1</mat-option>
+        <mat-option value="user2">User 2</mat-option>
+        <mat-option value="user3">User 3</mat-option>
+        <mat-option value="user4">User 4</mat-option>
+        <mat-option value="user5">User 5</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="column" style="width: 28%">
+    <mat-form-field>
+      <mat-label>Buyer</mat-label>
+      <mat-select (selectionChange)="selected($event.value)" #buyer>
+        <mat-option value="user1">User 1</mat-option>
+        <mat-option value="user2">User 2</mat-option>
+        <mat-option value="user3">User 3</mat-option>
+        <mat-option value="user4">User 4</mat-option>
+        <mat-option value="user5">User 5</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="column" style="width: 25%">
+    <mat-form-field>
+      <mat-label>Channel</mat-label>
+      <mat-select #channel (selectionChange)="newCurrentChannel($event)">
+        <mat-option *ngFor="let channel of channels" [value]="channel">{{channel}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="column" style="padding-top: 21px">
+    <mat-checkbox color="primary" [(ngModel)]="isNewChannel">Imagen modificada</mat-checkbox>
   </div>
 </div>
-<div style="text-align: center; margin: 25px;">
-  <button type="button" class="btn btn-primary" (click)='sellLicense(seller.value, buyer.value)'
-    style="margin: 5px">Sell</button>
-  <button type="button" class="btn btn-primary" (click)='getHistory(channel.value, seller.value)'
-    style="margin: 5px">History</button>
+<div class="row">
+  <div class="column" style="width:42%;">
+    <mat-form-field>
+      <mat-label>License options</mat-label>
+      <mat-select (selectionChange)="onItemChange($event)" multiple>
+        <mat-option *ngFor="let option of dropdownList" [value]="option">{{option}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="column" style="width: 50%;">
+    <button mat-raised-button color="primary" class="btn btn-primary" (click)='sellLicense(seller.value, buyer.value)'
+      style="margin: 5px">Sell</button>
+    <button mat-raised-button color="primary" (click)='getHistory(channel.value, seller.value)'
+      style="margin: 5px">History</button>
+  </div>
 </div>
-<div style="width: 200px; margin: auto">
-  <ng-multiselect-dropdown [placeholder]="'License options'" [data]="dropdownList" [settings]="dropdownSettings"
-    (onSelect)="onItemSelect($event)" (onDeSelect)="onItemDeselect($event)" style="width: 100px">
-  </ng-multiselect-dropdown>
+<div style="text-align: center">
+  <mat-progress-spinner class="example-margin" color="primary"
+  mode="indeterminate" value=50 *ngIf="loading">
+</mat-progress-spinner>
 </div>
-<div align="center" style="margin: 30px">
-  <table border="1" *ngIf="history">
-      <tr>
-        <th>idImage</th>
-        <th>hashImage</th>
-        <th>newOwner</th>
-        <th>license</th>
-      </tr>
-      <tr *ngFor="let tr of history">
-        <td>{{tr.idImage}}</td>
-        <td>{{tr.hashImage}}</td>
-        <td>{{tr.newOwner}}</td>
-        <td>
-          <table border="1">
-            <tr>
-              <th>adapt</th>
-              <th>diminish</th>
-              <th>embed</th>
-              <th>enhance</th>
-              <th>enlarge</th>
-              <th>issue</th>
-              <th>modify</th>
-              <th>play</th>
-              <th>print</th>
-              <th>reduce</th>
-            </tr>
-            <tr>
-              <td>{{tr.license.adapt}}</td>
-              <td>{{tr.license.diminish}}</td>
-              <td>{{tr.license.embed}}</td>
-              <td>{{tr.license.enhance}}</td>
-              <td>{{tr.license.enlarge}}</td>
-              <td>{{tr.license.issue}}</td>
-              <td>{{tr.license.modify}}</td>
-              <td>{{tr.license.play}}</td>
-              <td>{{tr.license.print}}</td>
-              <td>{{tr.license.reduce}}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-  </table>
-</div>
+<pm-table [childHistory]="history"></pm-table>
