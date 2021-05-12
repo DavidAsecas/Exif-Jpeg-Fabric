@@ -27,7 +27,7 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "fabric-client": "^1.1.0",
-    "grpc": "^1.10.0",
+    "grpc": "^1.24.9",
     "ng-multiselect-dropdown": "^0.2.3",
     "rxjs": "~6.2.0",
     "zone.js": "~0.8.26"
